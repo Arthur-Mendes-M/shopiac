@@ -233,3 +233,57 @@ export const useRegister = () => {
     }
   });
 };
+
+// Mock data for orders
+const mockOrders: Order[] = [
+  {
+    id: "883259324",
+    numero: "1", 
+    data_pedido: "19/09/2025",
+    situacao: "Em aberto",
+    nome: "João Silva", 
+    valor: 159
+  },
+  {
+    id: "883230456",
+    numero: "2",
+    data_pedido: "11/09/2025", 
+    situacao: "Enviado",
+    nome: "João Silva",
+    valor: 318
+  },
+  {
+    id: "883230457",
+    numero: "3",
+    data_pedido: "05/09/2025",
+    situacao: "Entregue", 
+    nome: "João Silva",
+    valor: 89.90
+  }
+];
+
+export const useOrders = () => {
+  return useQuery({
+    queryKey: ['orders'],
+    queryFn: async (): Promise<Order[]> => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return mockOrders;
+    },
+  });
+};
+
+export const useCheckout = () => {
+  return useMutation({
+    mutationFn: async (orderData: { items: any[], address: any, delivery: any }) => {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return {
+        success: true,
+        data: {
+          Url: "https://abacatepay.com/pay/bill_example123"
+        }
+      };
+    },
+  });
+};
