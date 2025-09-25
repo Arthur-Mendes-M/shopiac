@@ -120,7 +120,7 @@ const Products = () => {
                 <div className="space-y-4">
                   <h4 className="font-medium">Ordenar por</h4>
                   <select 
-                    className="w-full p-2 border rounded-md"
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >

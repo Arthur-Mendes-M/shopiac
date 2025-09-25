@@ -247,20 +247,20 @@ export const useLogin = () => {
         console.warn('API não disponível, usando dados mock:', error);
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (data.cpf_cnpj === '12345678901' && data.password === '123456') {
+        if (data.email === 'test@shopiac.com' && data.password === '123456') {
           return {
             user: {
               id: '1',
               name: 'João Silva',
               email: 'joao@email.com',
-              cpf_cnpj: data.cpf_cnpj,
+              cpf_cnpj: '12345678901',
               phone: '11999999999'
             },
             token: 'mock-jwt-token'
           };
         }
         
-        throw new Error('CPF/CNPJ ou senha inválidos');
+        throw new Error('E-mail ou senha inválidos');
       }
     },
     onError: (error) => {

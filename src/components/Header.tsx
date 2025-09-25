@@ -50,122 +50,47 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Mobile Menu */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <div className="flex flex-col space-y-4 mt-4">
-              <Logo showText={true} className="animate-fade-in" />
-              
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="flex items-center space-x-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar produtos..."
-                    className="pl-8"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </form>
-
-              {/* Mobile Navigation */}
-              <nav className="flex flex-col space-y-3">
-                {navigationItems.map((item) => (
-                  <Link 
-                    key={item.to}
-                    to={item.to} 
-                    className="text-sm font-medium hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-muted"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-
-              {/* Mobile User Menu */}
-              {isAuthenticated ? (
-                <div className="space-y-3 pt-4 border-t">
-                  <div className="px-3 py-2">
-                    <p className="font-medium">Olá, {user?.name}</p>
-                    <p className="text-sm text-muted-foreground">{user?.email}</p>
-                  </div>
-                  <Link 
-                    to="/minha-conta" 
-                    className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Minha Conta</span>
-                  </Link>
-                  <Link 
-                    to="/meus-pedidos" 
-                    className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>Meus Pedidos</span>
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start"
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sair
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2 pt-4 border-t">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full"
-                    onClick={() => {
-                      navigate('/login');
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    Entrar
-                  </Button>
-                  <Button 
-                    className="w-full"
-                    onClick={() => {
-                      navigate('/cadastro');
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    Cadastrar
-                  </Button>
-                </div>
-              )}
-            </div>
-          </SheetContent>
-        </Sheet>
-
         {/* Logo */}
         <Link to="/" className="animate-fade-in">
           <Logo className="hover:scale-105 transition-transform duration-200" />
         </Link>
 
-        {/* Navigation Links */}
+        {/* Navigation Links with Categories Dropdown */}
         <nav className="hidden lg:flex items-center space-x-6">
-          {navigationItems.map((item) => (
-            <Link 
-              key={item.to}
-              to={item.to} 
-              className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {/* Categories Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+              >
+                Categorias
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="animate-scale-in">
+              <DropdownMenuItem onClick={() => navigate('/uniformes')} className="hover:bg-muted transition-colors">
+                Uniformes
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/canecas')} className="hover:bg-muted transition-colors">
+                Canecas
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/acessorios')} className="hover:bg-muted transition-colors">
+                Acessórios
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/produtos')} className="hover:bg-muted transition-colors">
+                Todos os Produtos
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Other navigation items */}
+          <Link 
+            to="/promocoes" 
+            className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+          >
+            Promoções
+          </Link>
         </nav>
 
         {/* Search Bar */}

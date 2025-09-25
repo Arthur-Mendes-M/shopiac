@@ -13,7 +13,7 @@ import { Eye, EyeOff, Lock, User } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    cpf_cnpj: '',
+    email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +27,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.cpf_cnpj || !formData.password) {
+    if (!formData.email || !formData.password) {
       toast({
         title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos",
@@ -56,37 +56,10 @@ const Login = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'cpf_cnpj') {
-      // Remove non-numeric characters and format CPF/CNPJ
-      const cleanValue = value.replace(/\D/g, '');
-      let formattedValue = cleanValue;
-      
-      if (cleanValue.length <= 11) {
-        // CPF format: 000.000.000-00
-        formattedValue = cleanValue
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d{1,2})/, '$1-$2');
-      } else {
-        // CNPJ format: 00.000.000/0000-00
-        formattedValue = cleanValue
-          .replace(/(\d{2})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1/$2')
-          .replace(/(\d{4})(\d{1,2})/, '$1-$2');
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        [name]: formattedValue
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
@@ -107,15 +80,14 @@ const Login = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>
+                  <Label htmlFor="email">E-mail</Label>
                   <Input
-                    id="cpf_cnpj"
-                    name="cpf_cnpj"
-                    type="text"
-                    placeholder="000.000.000-00"
-                    value={formData.cpf_cnpj}
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
                     onChange={handleInputChange}
-                    maxLength={18}
                     required
                   />
                 </div>
@@ -202,7 +174,7 @@ const Login = () => {
               <div className="mt-6 p-4 bg-muted/30 rounded-lg">
                 <h4 className="font-semibold text-sm mb-2">🎯 Dados para teste:</h4>
                 <div className="text-xs text-muted-foreground space-y-1">
-                  <p><strong>CPF:</strong> 123.456.789-01</p>
+                  <p><strong>E-mail:</strong> test@shopiac.com</p>
                   <p><strong>Senha:</strong> 123456</p>
                 </div>
               </div>

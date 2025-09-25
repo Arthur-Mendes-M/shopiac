@@ -90,7 +90,7 @@ export interface Order {
 }
 
 export interface LoginData {
-  cpf_cnpj: string;
+  email: string;
   password: string;
 }
 

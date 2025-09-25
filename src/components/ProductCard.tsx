@@ -23,7 +23,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       return;
     }
 
-    if (product.stock === 0) {
+    // Check if product is truly out of stock
+    const isOutOfStock = (product.stock === 0 && product.variations.length === 0) ||
+                        (product.variations.length > 0 && product.variations.every(v => v.stock === 0));
+    
+    if (isOutOfStock) {
       toast({
         title: "Produto indisponível",
         description: "Este produto está fora de estoque",
@@ -59,7 +63,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in hover:scale-[1.02]">
       <Link to={`/produto/${product.id}`}>
         <CardContent className="p-4">
-          {/* Product Image */}
+          {/* Product Image with hover effect */}
           <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-muted">
             {hasPromo && (
               <Badge 
@@ -71,22 +75,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
             
             {product.images.length > 0 ? (
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
+              <div className="w-full h-full relative">
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:opacity-0 transition-opacity duration-300 absolute inset-0"
+                />
+                {product.images.length > 1 && (
+                  <img
+                    src={product.images[1]}
+                    alt={`${product.name} - vista alternativa`}
+                    className="w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 transform group-hover:scale-110"
+                  />
+                )}
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                 Sem imagem
               </div>
             )}
 
-            {product.stock === 0 && (
+            {/* Check if product is out of stock (considering variations) */}
+            {(product.stock === 0 && product.variations.length === 0) ||
+             (product.variations.length > 0 && product.variations.every(v => v.stock === 0)) ? (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center animate-fade-in">
                 <Badge variant="secondary">Fora de Estoque</Badge>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Product Info */}
@@ -135,7 +150,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="w-full hover:scale-105 transition-all duration-200"
           size="sm"
           onClick={handleAddToCart}
-          disabled={product.stock === 0 && product.variations.length === 0}
+          disabled={
+            (product.stock === 0 && product.variations.length === 0) ||
+            (product.variations.length > 0 && product.variations.every(v => v.stock === 0))
+          }
         >
           <ShoppingCart className="w-4 h-4 mr-2 group-hover:animate-bounce" />
           {product.variations.length > 0 ? 'Ver Opções' : 'Adicionar'}
