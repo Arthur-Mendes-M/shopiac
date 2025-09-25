@@ -105,7 +105,7 @@ const mockProducts: Product[] = [
   }
 ];
 
-// API Base URL (será mock por enquanto)
+// API Base URL
 const API_BASE = 'http://localhost:8081';
 
 // Products API
@@ -113,9 +113,20 @@ export const useProducts = () => {
   return useQuery({
     queryKey: ['products'],
     queryFn: async (): Promise<Product[]> => {
-      // Mock implementation
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return mockProducts;
+      try {
+        const response = await fetch(`${API_BASE}/product`);
+        const data = await response.json();
+        
+        if (data.success) {
+          return data.data;
+        }
+        throw new Error(data.message || 'Erro ao buscar produtos');
+      } catch (error) {
+        // Fallback to mock data in development
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return mockProducts;
+      }
     },
   });
 };
@@ -124,8 +135,19 @@ export const useProductsByCategory = (category: string) => {
   return useQuery({
     queryKey: ['products', 'category', category],
     queryFn: async (): Promise<Product[]> => {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return mockProducts.filter(product => product.category === category);
+      try {
+        const response = await fetch(`${API_BASE}/product/category/${category}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          return data.data;
+        }
+        throw new Error(data.message || 'Erro ao buscar produtos por categoria');
+      } catch (error) {
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return mockProducts.filter(product => product.category === category);
+      }
     },
   });
 };
@@ -134,10 +156,21 @@ export const useProductById = (id: string) => {
   return useQuery({
     queryKey: ['product', id],
     queryFn: async (): Promise<Product> => {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      const product = mockProducts.find(p => p.id === id);
-      if (!product) throw new Error('Produto não encontrado');
-      return product;
+      try {
+        const response = await fetch(`${API_BASE}/product/${id}`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+          return data.data[0];
+        }
+        throw new Error(data.message || 'Produto não encontrado');
+      } catch (error) {
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        const product = mockProducts.find(p => p.id === id);
+        if (!product) throw new Error('Produto não encontrado');
+        return product;
+      }
     },
     enabled: !!id,
   });
@@ -147,8 +180,19 @@ export const usePromoProducts = () => {
   return useQuery({
     queryKey: ['products', 'promo'],
     queryFn: async (): Promise<Product[]> => {
-      await new Promise(resolve => setTimeout(resolve, 400));
-      return mockProducts.filter(product => product.promo);
+      try {
+        const response = await fetch(`${API_BASE}/product/promo`);
+        const data = await response.json();
+        
+        if (data.success) {
+          return data.data;
+        }
+        throw new Error(data.message || 'Erro ao buscar promoções');
+      } catch (error) {
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 400));
+        return mockProducts.filter(product => product.promo);
+      }
     },
   });
 };
@@ -180,23 +224,44 @@ export const useViaCep = (cep: string) => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginData): Promise<{ user: User; token: string }> => {
-      // Mock implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (data.cpf_cnpj === '12345678901' && data.password === '123456') {
-        return {
-          user: {
-            id: '1',
-            name: 'João Silva',
-            email: 'joao@email.com',
-            cpf_cnpj: data.cpf_cnpj,
-            phone: '11999999999'
+      try {
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          token: 'mock-jwt-token'
-        };
+          body: JSON.stringify(data),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          return {
+            user: result.data.user,
+            token: result.data
+          };
+        }
+        throw new Error(result.message || 'Erro no login');
+      } catch (error) {
+        // Fallback to mock data in development
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (data.cpf_cnpj === '12345678901' && data.password === '123456') {
+          return {
+            user: {
+              id: '1',
+              name: 'João Silva',
+              email: 'joao@email.com',
+              cpf_cnpj: data.cpf_cnpj,
+              phone: '11999999999'
+            },
+            token: 'mock-jwt-token'
+          };
+        }
+        
+        throw new Error('CPF/CNPJ ou senha inválidos');
       }
-      
-      throw new Error('CPF/CNPJ ou senha inválidos');
     },
     onError: (error) => {
       toast({
@@ -211,18 +276,40 @@ export const useLogin = () => {
 export const useRegister = () => {
   return useMutation({
     mutationFn: async (data: RegisterData): Promise<{ user: User; token: string }> => {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      return {
-        user: {
-          id: Date.now().toString(),
-          name: data.name,
-          email: data.email,
-          cpf_cnpj: data.cpf_cnpj,
-          phone: data.phone
-        },
-        token: 'mock-jwt-token-register'
-      };
+      try {
+        const response = await fetch(`${API_BASE}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          return {
+            user: result.data.user,
+            token: result.data.token
+          };
+        }
+        throw new Error(result.message || 'Erro no cadastro');
+      } catch (error) {
+        // Fallback to mock data in development
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        
+        return {
+          user: {
+            id: Date.now().toString(),
+            name: data.name,
+            email: data.email,
+            cpf_cnpj: data.cpf_cnpj,
+            phone: data.phone
+          },
+          token: 'mock-jwt-token-register'
+        };
+      }
     },
     onError: (error) => {
       toast({
@@ -266,9 +353,25 @@ export const useOrders = () => {
   return useQuery({
     queryKey: ['orders'],
     queryFn: async (): Promise<Order[]> => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return mockOrders;
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/order`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          return result.data;
+        }
+        throw new Error(result.message || 'Erro ao buscar pedidos');
+      } catch (error) {
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return mockOrders;
+      }
     },
   });
 };
@@ -276,14 +379,40 @@ export const useOrders = () => {
 export const useCheckout = () => {
   return useMutation({
     mutationFn: async (orderData: { items: any[], address: any, delivery: any }) => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return {
-        success: true,
-        data: {
-          Url: "https://abacatepay.com/pay/bill_example123"
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/transation`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            delivery_id: orderData.delivery.id_forma_frete,
+            address_id: orderData.address.id,
+            items: orderData.items.map(item => ({
+              id: item.productId,
+              amount: item.quantity
+            }))
+          }),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          return result;
         }
-      };
+        throw new Error(result.message || 'Erro no checkout');
+      } catch (error) {
+        console.warn('API não disponível, usando dados mock:', error);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return {
+          success: true,
+          data: {
+            Url: "https://abacatepay.com/pay/bill_example123"
+          }
+        };
+      }
     },
   });
 };

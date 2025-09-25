@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Logo } from '@/components/Logo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useState } from 'react';
@@ -58,9 +59,7 @@ export const Header = () => {
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
             <div className="flex flex-col space-y-4 mt-4">
-              <Link to="/" className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                SportShop
-              </Link>
+              <Logo showText={true} className="animate-fade-in" />
               
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="flex items-center space-x-2">
@@ -152,8 +151,8 @@ export const Header = () => {
         </Sheet>
 
         {/* Logo */}
-        <Link to="/" className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:scale-105 transition-transform duration-200">
-          SportShop
+        <Link to="/" className="animate-fade-in">
+          <Logo className="hover:scale-105 transition-transform duration-200" />
         </Link>
 
         {/* Navigation Links */}
