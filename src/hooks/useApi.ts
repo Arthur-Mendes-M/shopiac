@@ -238,7 +238,7 @@ export const useLogin = () => {
         if (result.success) {
           return {
             user: result.data.user,
-            token: result.data
+            token: result.data.token
           };
         }
         throw new Error(result.message || 'Erro no login');
