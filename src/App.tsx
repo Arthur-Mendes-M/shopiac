@@ -16,6 +16,7 @@ import Checkout from "./pages/Checkout";
 import MyAccount from "./pages/MyAccount";
 import MyOrders from "./pages/MyOrders";
 import NotFound from "./pages/NotFound";
+import { ScrollToTop } from "./components/scrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollToTop  />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/produtos" element={<Products />} />

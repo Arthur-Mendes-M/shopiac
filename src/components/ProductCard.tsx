@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Product } from '@/types';
-import { useCart } from '@/contexts/CartContext';
-import { toast } from '@/hooks/use-toast';
+import { Link, redirect, useNavigate } from "react-router-dom";
+import { ShoppingCart, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Product } from "@/types";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -13,21 +13,22 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
 
   // Check if product is truly out of stock
-  const isOutOfStock = product.variations.length > 0 
-    ? product.variations.every(v => v.stock === 0)
-    : product.stock === 0;
+  const isOutOfStock =
+    product.variations.length > 0
+      ? product.variations.every((v) => v.stock === 0)
+      : product.stock === 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
+    // Removed navigate declaration as it is now at the top level
 
     if (product.variations.length > 0) {
-      // Se tem variações, vai para página do produto
-      return;
+      return navigate(`/produto/${product.id}`);
     }
-    
+
     if (isOutOfStock) {
       toast({
         title: "Produto indisponível",
@@ -50,9 +51,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
@@ -61,26 +62,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const hasPromo = !!product.promo;
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in hover:scale-[1.02]">
+    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in hover:scale-[1.02] flex flex-col gap-2 justify-between h-full">
       <Link to={`/produto/${product.id}`}>
         <CardContent className="p-4">
           {/* Product Image with hover effect */}
           <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-muted">
             {hasPromo && (
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute top-2 left-2 z-10 animate-bounce-in"
               >
                 -{discountPercentage}%
               </Badge>
             )}
-            
+
             {product.images.length > 0 ? (
               <div className="w-full h-full relative">
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className="w-full h-full object-cover group-hover:opacity-0 transition-opacity duration-300 absolute inset-0"
+                  className="w-full h-full object-cover transition-opacity duration-300 absolute inset-0"
                 />
                 {product.images.length > 1 && (
                   <img
@@ -98,16 +99,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
             {/* Check if product is out of stock (considering variations) */}
             {isOutOfStock ? (
-              <div 
+              <div
                 className="absolute inset-0 flex items-center justify-center animate-fade-in"
                 style={{
-                  backgroundImage: product.images.length > 0 ? `url(${product.images[0]})` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  backgroundImage:
+                    product.images.length > 0
+                      ? `url(${product.images[0]})`
+                      : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               >
                 <div className="absolute inset-0 bg-black/60" />
-                <Badge variant="secondary" className="relative z-10 bg-white/90 text-black">
+                <Badge
+                  variant="secondary"
+                  className="relative z-10 bg-white/90 hover:bg-white/90 text-black"
+                >
                   Fora de Estoque
                 </Badge>
               </div>
@@ -116,19 +123,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Product Info */}
           <div className="space-y-2">
-            <Badge variant="outline" className="text-xs transition-all duration-200 hover:scale-105">
+            <Badge
+              variant="outline"
+              className="text-xs transition-all duration-200 hover:scale-105"
+            >
               {product.category}
             </Badge>
-            
+
             <h3 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-all duration-300">
               {product.name}
             </h3>
-            
+
             {/* Rating placeholder */}
             <div className="flex items-center space-x-1">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-3 h-3 fill-current text-yellow-400 hover:scale-125 transition-transform duration-200" />
+                  <Star
+                    key={star}
+                    className="w-3 h-3 fill-current text-yellow-400 hover:scale-125 transition-transform duration-200"
+                  />
                 ))}
               </div>
               <span className="text-xs text-muted-foreground">(4.8)</span>
@@ -141,7 +154,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   {formatPrice(product.price)}
                 </span>
               )}
-              <span className={`font-bold transition-all duration-200 ${hasPromo ? 'text-destructive animate-bounce' : 'text-foreground'}`}>
+              <span
+                className={`font-bold transition-all duration-200 ${
+                  hasPromo ? "text-destructive" : "text-foreground"
+                }`}
+              >
                 {formatPrice(finalPrice)}
               </span>
             </div>
@@ -162,8 +179,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           onClick={handleAddToCart}
           disabled={isOutOfStock}
         >
-          <ShoppingCart className="w-4 h-4 mr-2 group-hover:animate-bounce" />
-          {product.variations.length > 0 ? 'Ver Opções' : 'Adicionar'}
+          {/* //   <ShoppingCart className="w-4 h-4 mr-2" />
+        //   {product.variations.length > 0 ? 'Ver Opções' : 'Adicionar'} */}
+
+          {!isOutOfStock && <ShoppingCart className="w-4 h-4 mr-2" />}
+          {isOutOfStock
+            ? "Sem estoque"
+            : product.variations.length > 0
+            ? "Ver Opções"
+            : "Adicionar"}
         </Button>
       </CardFooter>
     </Card>

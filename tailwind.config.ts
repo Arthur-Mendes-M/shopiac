@@ -118,7 +118,11 @@ export default {
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" }
-        }
+        },
+				'infinite-horizontal-scroll': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(-100%)' }
+				},
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -135,7 +139,8 @@ export default {
         "bounce-in": "bounce-in 0.6s ease-out",
         "float": "float 3s ease-in-out infinite",
         "enter": "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
-        "exit": "fade-out 0.3s ease-out, scale-out 0.2s ease-out"
+        "exit": "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
+        'infinite-horizontal-scroll': 'infinite-horizontal-scroll 30s linear infinite',
       },
     },
   },

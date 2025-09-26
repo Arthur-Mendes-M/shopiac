@@ -3,7 +3,7 @@ export interface Product {
   name: string;
   codigo: string;
   price: number;
-  category: 'Uniforme' | 'Acessórios' | 'Canecas';
+  category: 'Uniforme' | 'Acessórios' | 'Caneca';
   peso_liquido: number;
   peso_bruto: number;
   altura_embalagem: number;

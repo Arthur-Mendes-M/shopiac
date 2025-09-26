@@ -19,6 +19,7 @@ import {
   Plus,
   Minus
 } from 'lucide-react';
+import parse from 'html-react-parser';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +81,7 @@ const ProductDetail = () => {
   const hasPromo = !!product.promo;
   const selectedVar = selectedVariation 
     ? product.variations.find(v => v.id === selectedVariation)
-    : null;
+    : product.variations[0];
   
   const currentPrice = selectedVar?.price || finalPrice;
   const isInStock = selectedVar ? selectedVar.stock > 0 : product.stock > 0;
@@ -313,9 +314,13 @@ const ProductDetail = () => {
             {/* Description */}
             <div className="space-y-4">
               <h3 className="font-semibold">Descrição</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              {/* <p className="text-muted-foreground leading-relaxed">
                 {product.description || 'Produto de alta qualidade para você torcer com estilo.'}
-              </p>
+              </p> */}
+
+              <div>
+                {parse(product.description || '<p>Produto de alta qualidade para você torcer com estilo.</p>')}
+              </div>
             </div>
           </div>
         </div>

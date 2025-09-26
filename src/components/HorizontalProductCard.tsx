@@ -1,23 +1,26 @@
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Product } from '@/types';
-import { useCart } from '@/contexts/CartContext';
-import { toast } from '@/hooks/use-toast';
+import { Link } from "react-router-dom";
+import { ShoppingCart, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Product } from "@/types";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
 
 interface HorizontalProductCardProps {
   product: Product;
 }
 
-export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ product }) => {
+export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
+  product,
+}) => {
   const { addItem } = useCart();
 
   // Check if product is truly out of stock
-  const isOutOfStock = product.variations.length > 0 
-    ? product.variations.every(v => v.stock === 0)
-    : product.stock === 0;
+  const isOutOfStock =
+    product.variations.length > 0
+      ? product.variations.every((v) => v.stock === 0)
+      : product.stock === 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,7 +30,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
       // Se tem variações, vai para página do produto
       return;
     }
-    
+
     if (isOutOfStock) {
       toast({
         title: "Produto indisponível",
@@ -50,9 +53,9 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
@@ -66,16 +69,16 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
         <CardContent className="p-4">
           <div className="flex space-x-4">
             {/* Product Image */}
-            <div className="w-24 h-24 flex-shrink-0 relative overflow-hidden rounded-lg bg-muted">
+            <div className="w-24 min-h-full max-h-full flex-shrink-0 relative overflow-hidden rounded-lg bg-muted">
               {hasPromo && (
-                <Badge 
-                  variant="destructive" 
+                <Badge
+                  variant="destructive"
                   className="absolute top-1 left-1 z-10 text-xs animate-bounce-in"
                 >
                   -{discountPercentage}%
                 </Badge>
               )}
-              
+
               {product.images.length > 0 ? (
                 <img
                   src={product.images[0]}
@@ -90,18 +93,18 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
 
               {/* Out of stock overlay */}
               {isOutOfStock && (
-                <div 
-                  className="absolute inset-0 flex items-center justify-center animate-fade-in"
+                <div
+                  className="absolute inset-0 flex items-center justify-center px-1 animate-fade-in"
                   style={{
-                    backgroundImage: product.images.length > 0 ? `url(${product.images[0]})` : 'none',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
+                    backgroundImage:
+                      product.images.length > 0
+                        ? `url(${product.images[0]})`
+                        : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
                 >
                   <div className="absolute inset-0 bg-black/60" />
-                  <Badge variant="secondary" className="relative z-10 bg-white/90 text-black text-xs">
-                    Fora de Estoque
-                  </Badge>
                 </div>
               )}
             </div>
@@ -118,7 +121,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
                       {product.name}
                     </h3>
                   </div>
-                  
+
                   {/* Price */}
                   <div className="text-right">
                     {hasPromo && (
@@ -126,17 +129,24 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
                         {formatPrice(product.price)}
                       </span>
                     )}
-                    <span className={`font-bold text-sm ${hasPromo ? 'text-destructive' : 'text-foreground'}`}>
+                    <span
+                      className={`font-bold text-sm ${
+                        hasPromo ? "text-destructive" : "text-foreground"
+                      }`}
+                    >
                       {formatPrice(finalPrice)}
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Rating */}
                 <div className="flex items-center space-x-1">
                   <div className="flex items-center">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-3 h-3 fill-current text-yellow-400" />
+                      <Star
+                        key={star}
+                        className="w-3 h-3 fill-current text-yellow-400"
+                      />
                     ))}
                   </div>
                   <span className="text-xs text-muted-foreground">(4.8)</span>
@@ -152,13 +162,17 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({ pr
               {/* Add to Cart Button */}
               <div className="mt-3">
                 <Button
-                  className="w-full hover:scale-105 transition-all duration-200"
+                  className="w-full transition-all duration-200"
                   size="sm"
                   onClick={handleAddToCart}
                   disabled={isOutOfStock}
                 >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  {product.variations.length > 0 ? 'Ver Opções' : 'Adicionar'}
+                  {!isOutOfStock && <ShoppingCart className="w-4 h-4 mr-2" />}
+                  {isOutOfStock
+                    ? "Sem estoque"
+                    : product.variations.length > 0
+                    ? "Ver Opções"
+                    : "Adicionar"}
                 </Button>
               </div>
             </div>

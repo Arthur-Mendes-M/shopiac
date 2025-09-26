@@ -6,6 +6,7 @@ import { ProductCard } from '@/components/ProductCard';
 import { useProducts, usePromoProducts } from '@/hooks/useApi';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingBag, Truck, Shield, HeadphonesIcon } from 'lucide-react';
+import SponsorsInfiniteCarousel from '@/components/sponsorsCarousel';
 
 const Index = () => {
   const { data: products, isLoading: productsLoading } = useProducts();
@@ -16,19 +17,22 @@ const Index = () => {
     {
       name: 'Uniformes',
       description: 'Camisas, shorts e kits completos',
-      image: 'https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=400&h=300&fit=crop',
+      // image: 'https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=400&h=300&fit=crop',
+      image: '/bone.png',
       link: '/uniformes'
     },
     {
       name: 'Canecas',
       description: 'Canecas térmicas e personalizadas',
-      image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop',
+      // image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop',
+      image: '/caneca.png',
       link: '/canecas'
     },
     {
       name: 'Acessórios',
       description: 'Bandeiras, chaveiros e muito mais',
-      image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
+      // image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
+      image: '/caderno.png',
       link: '/acessorios'
     }
   ];
@@ -54,7 +58,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 animate-fade-in">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/50 via-background to-accent/10 animate-fade-in">
         <div className="container mx-auto px-4 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-slide-in-left">
@@ -105,9 +109,9 @@ const Index = () => {
             </div>
 
             <div className="relative animate-slide-in-right">
-              <div className="aspect-square relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20 hover:scale-105 transition-transform duration-500 animate-float">
+              <div className="aspect-square relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20 hover:scale-105 transition-transform duration-500">
                 <img
-                  src="https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=600&h=600&fit=crop"
+                  src="/hero-image.png"
                   alt="Uniformes esportivos"
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                 />
@@ -162,7 +166,7 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-muted/30 animate-fade-in">
+      <section className="bg-muted/30 animate-fade-in" id='destaques'>
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12 animate-slide-in-left">
             <div className="space-y-2">
@@ -205,7 +209,7 @@ const Index = () => {
       {/* Promotion Banner */}
       <section className="py-20 animate-fade-in">
         <div className="container mx-auto px-4">
-          <Card className="relative overflow-hidden bg-gradient-to-r from-primary to-accent text-primary-foreground animate-scale-in hover:scale-[1.02] transition-all duration-500">
+          <Card className="relative overflow-hidden full-red-gradient text-primary-foreground animate-scale-in hover:scale-[1.02] transition-all duration-500">
             <CardContent className="p-12 text-center">
               <div className="max-w-2xl mx-auto space-y-6">
                 <Badge variant="secondary" className="mb-4 animate-bounce-in">
@@ -220,13 +224,13 @@ const Index = () => {
                 <Button 
                   size="lg" 
                   variant="secondary" 
-                  className="hover:scale-110 transition-all duration-300 animate-bounce-in" 
+                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground" 
                   style={{ animationDelay: '0.4s' }}
                   asChild
                 >
                   <Link to="/promocoes">
                     Ver Promoções
-                    <ArrowRight className="ml-2 h-5 w-5 hover:translate-x-2 transition-transform" />
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform" />
                   </Link>
                 </Button>
               </div>
@@ -234,6 +238,9 @@ const Index = () => {
           </Card>
         </div>
       </section>
+
+      {/* Sponsors Carousel */}
+      <SponsorsInfiniteCarousel />
     </Layout>
   );
 };

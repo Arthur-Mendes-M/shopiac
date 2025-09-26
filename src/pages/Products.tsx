@@ -27,6 +27,7 @@ const Products = () => {
   const searchTerm = searchParams.get('busca');
   
   const { data: allProducts, isLoading } = useProducts();
+  console.log("All Products:", allProducts);
   const { data: categoryProducts, isLoading: categoryLoading } = useProductsByCategory(category || '');
   const { data: promoProducts, isLoading: promoLoading } = usePromoProducts();
   
@@ -65,7 +66,7 @@ const Products = () => {
   const categories = [
     { name: 'Todos', value: '', count: allProducts?.length || 0 },
     { name: 'Uniformes', value: 'Uniforme', count: allProducts?.filter(p => p.category === 'Uniforme').length || 0 },
-    { name: 'Canecas', value: 'Canecas', count: allProducts?.filter(p => p.category === 'Canecas').length || 0 },
+    { name: 'Canecas', value: 'Caneca', count: allProducts?.filter(p => p.category === 'Caneca').length || 0 },
     { name: 'Acessórios', value: 'Acessórios', count: allProducts?.filter(p => p.category === 'Acessórios').length || 0 },
   ];
 
@@ -98,7 +99,7 @@ const Products = () => {
                       <Button
                         key={cat.value}
                         variant={category === cat.value || (!category && cat.value === '') ? 'default' : 'ghost'}
-                        className="w-full justify-between"
+                        className="w-full justify-between hover:bg-primary-glow hover:text-white"
                         size="sm"
                         onClick={() => {
                           const params = new URLSearchParams();

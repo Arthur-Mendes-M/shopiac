@@ -131,10 +131,11 @@ export const useProducts = () => {
   });
 };
 
-export const useProductsByCategory = (category: string) => {
+export const useProductsByCategory = (category: string) => {  
   return useQuery({
     queryKey: ['products', 'category', category],
     queryFn: async (): Promise<Product[]> => {
+      if (!category) return [];
       try {
         const response = await fetch(`${API_BASE}/product/category/${category}`);
         const data = await response.json();
@@ -227,7 +228,7 @@ export const useLogin = () => {
       try {
         // Mapear email para cpf_cnpj conforme API espera
         const apiData = {
-          cpf_cnpj: data.email,
+          email: data.email,
           password: data.password
         };
         

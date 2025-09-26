@@ -38,6 +38,7 @@ const Login = () => {
 
     loginMutation(formData, {
       onSuccess: (data) => {
+        console.log("Login successful:", data);
         authLogin(data.user, data.token);
         toast({
           title: "Login realizado!",

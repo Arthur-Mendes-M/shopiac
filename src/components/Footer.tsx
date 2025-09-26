@@ -9,7 +9,7 @@ export const Footer = () => {
           {/* Logo e Descrição */}
           <div className="space-y-4">
             <h3 className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              SportShop
+              SHOP IAC
             </h3>
             <p className="text-sm text-muted-foreground">
               A melhor loja de artigos esportivos do Brasil. Uniformes, acessórios e muito mais para o seu time do coração.
@@ -18,7 +18,7 @@ export const Footer = () => {
               <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link to="https://www.instagram.com/itaqua.athletico.clube" className="text-muted-foreground hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
               </Link>
               <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
@@ -70,7 +70,7 @@ export const Footer = () => {
             <h4 className="font-semibold">Contato</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>📞 (11) 99999-9999</p>
-              <p>✉️ contato@sportshop.com.br</p>
+              <p>✉️ timeiacshop@gmail.com</p>
               <p>🕒 Seg à Sex: 9h às 18h</p>
               <p>📍 São Paulo, SP</p>
             </div>
@@ -78,7 +78,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; 2024 SportShop. Todos os direitos reservados.</p>
+          <p>&copy; {(new Date().getFullYear()) || "2025"} SportShop. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

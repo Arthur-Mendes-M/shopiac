@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Search, Home, Package, Coffee, Zap, Menu } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Search, Home, Package, Coffee, Zap, EllipsisVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -68,10 +68,10 @@ export const MobileMenu = () => {
 
         {/* Right Side - Menu Trigger */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="hover:scale-110 transition-transform duration-200">
-              <Menu className="h-5 w-5" />
-            </Button>
+          <SheetTrigger className='p-2'>
+            {/* <Button variant="ghost" className="border text-2xl hover:scale-110 transition-transform duration-200"> */}
+              <EllipsisVertical className="h-7 w-7 stroke-[1.5px]" />
+            {/* </Button> */}
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <div className="flex flex-col space-y-4 mt-4">
@@ -80,9 +80,10 @@ export const MobileMenu = () => {
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="flex items-center space-x-2">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar produtos..."
+                    autoFocus={false}
                     className="pl-8"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
