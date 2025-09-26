@@ -105,8 +105,8 @@ const mockProducts: Product[] = [
   }
 ];
 
-// API Base URL
-const API_BASE = 'http://localhost:8081';
+// API Base URL - usando variável de ambiente
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
 // Products API
 export const useProducts = () => {
@@ -225,12 +225,18 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginData): Promise<{ user: User; token: string }> => {
       try {
+        // Mapear email para cpf_cnpj conforme API espera
+        const apiData = {
+          cpf_cnpj: data.email,
+          password: data.password
+        };
+        
         const response = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(apiData),
         });
         
         const result = await response.json();

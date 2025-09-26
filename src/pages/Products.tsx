@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { ProductCard } from '@/components/ProductCard';
+import { HorizontalProductCard } from '@/components/HorizontalProductCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +12,7 @@ import { Filter, Grid, List } from 'lucide-react';
 const Products = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Detect category from URL path
   const getCategory = () => {
@@ -99,14 +101,12 @@ const Products = () => {
                         className="w-full justify-between"
                         size="sm"
                         onClick={() => {
-                          const params = new URLSearchParams(searchParams);
-                          if (cat.value === '') {
-                            params.delete('categoria');
-                          } else {
+                          const params = new URLSearchParams();
+                          if (cat.value !== '') {
                             params.set('categoria', cat.value);
                           }
-                          window.history.pushState({}, '', `${window.location.pathname}?${params}`);
-                          window.location.reload();
+                          const newUrl = `/produtos${params.toString() ? '?' + params.toString() : ''}`;
+                          navigate(newUrl);
                         }}
                       >
                         {cat.name}
@@ -176,7 +176,11 @@ const Products = () => {
                   : 'grid-cols-1'
               }`}>
                 {sortedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  viewMode === 'grid' ? (
+                    <ProductCard key={product.id} product={product} />
+                  ) : (
+                    <HorizontalProductCard key={product.id} product={product} />
+                  )
                 ))}
               </div>
             ) : (

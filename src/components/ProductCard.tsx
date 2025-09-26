@@ -14,6 +14,11 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart();
 
+  // Check if product is truly out of stock
+  const isOutOfStock = product.variations.length > 0 
+    ? product.variations.every(v => v.stock === 0)
+    : product.stock === 0;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -22,10 +27,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       // Se tem variações, vai para página do produto
       return;
     }
-
-    // Check if product is truly out of stock
-    const isOutOfStock = (product.stock === 0 && product.variations.length === 0) ||
-                        (product.variations.length > 0 && product.variations.every(v => v.stock === 0));
     
     if (isOutOfStock) {
       toast({
@@ -96,10 +97,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             )}
 
             {/* Check if product is out of stock (considering variations) */}
-            {(product.stock === 0 && product.variations.length === 0) ||
-             (product.variations.length > 0 && product.variations.every(v => v.stock === 0)) ? (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center animate-fade-in">
-                <Badge variant="secondary">Fora de Estoque</Badge>
+            {isOutOfStock ? (
+              <div 
+                className="absolute inset-0 flex items-center justify-center animate-fade-in"
+                style={{
+                  backgroundImage: product.images.length > 0 ? `url(${product.images[0]})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                <div className="absolute inset-0 bg-black/60" />
+                <Badge variant="secondary" className="relative z-10 bg-white/90 text-black">
+                  Fora de Estoque
+                </Badge>
               </div>
             ) : null}
           </div>
@@ -150,10 +160,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="w-full hover:scale-105 transition-all duration-200"
           size="sm"
           onClick={handleAddToCart}
-          disabled={
-            (product.stock === 0 && product.variations.length === 0) ||
-            (product.variations.length > 0 && product.variations.every(v => v.stock === 0))
-          }
+          disabled={isOutOfStock}
         >
           <ShoppingCart className="w-4 h-4 mr-2 group-hover:animate-bounce" />
           {product.variations.length > 0 ? 'Ver Opções' : 'Adicionar'}
