@@ -381,7 +381,8 @@ export const useOrders = () => {
       } catch (error) {
         console.warn('API não disponível, usando dados mock:', error);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        return mockOrders;
+        // return mockOrders;
+        return [];
       }
     },
   });

@@ -32,6 +32,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
+
+    console.log("Setou o valor do user no contexto", { storedToken, storedUser });
     
     if (storedToken && storedUser) {
       setToken(storedToken);

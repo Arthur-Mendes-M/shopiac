@@ -34,6 +34,15 @@ const MyAccount = () => {
     loadAddresses();
   }, []);
 
+  useEffect(() => {
+    setUserData({
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      cpf: user?.cpf_cnpj || ''
+    });
+  }, [user]);
+
   const loadAddresses = async () => {
     try {
       const response = await getAddresses();

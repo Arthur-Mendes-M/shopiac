@@ -110,6 +110,17 @@ export const Header = () => {
 
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList className="flex items-center space-x-6">
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/"
+                  className="text-sm font-medium relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+                >
+                  Início
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
             {/* Categorias Dropdown */}
             <NavigationMenuItem>
               <NavigationMenuTrigger

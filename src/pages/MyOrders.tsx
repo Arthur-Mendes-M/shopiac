@@ -45,10 +45,16 @@ const MyOrders = () => {
     }
   };
 
+  const sortedOrders = orders
+    ? [...orders].sort(
+        (a, b) => Number(b.numero) - Number(a.numero)
+      )
+    : [];
+
   const filteredOrders =
     filterBy !== "Todos"
-      ? orders?.filter((order) => order.situacao === filterBy)
-      : orders;
+      ? sortedOrders?.filter((order) => order.situacao === filterBy)
+      : sortedOrders;
 
   if (isLoading) {
     return (
@@ -75,6 +81,8 @@ const MyOrders = () => {
     );
   }
 
+  console.log("SORTED ORDERS:", sortedOrders);
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 animate-fade-in">
@@ -98,15 +106,21 @@ const MyOrders = () => {
                   )
                 }
               >
-                <option value="Todos" selected className="text-foreground">
+                <option value="Todos" className="text-foreground">
                   Todos
                 </option>
-                <option value="Em aberto" className="text-foreground">Aguardando pagamento</option>
-                <option value="Aprovado" className="text-foreground">Pagamento aprovado</option>
+                <option value="Em aberto" className="text-foreground">
+                  Aguardando pagamento
+                </option>
+                <option value="Aprovado" className="text-foreground">
+                  Pagamento aprovado
+                </option>
                 <option value="Pronto para envio" className="text-foreground">
                   Pedido pronto para envio
                 </option>
-                <option value="Entregue" className="text-foreground">Pedido entregue</option>
+                <option value="Entregue" className="text-foreground">
+                  Pedido entregue
+                </option>
               </select>
             </div>
           </div>

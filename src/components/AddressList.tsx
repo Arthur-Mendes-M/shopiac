@@ -46,7 +46,9 @@ export const AddressList: React.FC<AddressListProps> = ({
           </div>
           <Button onClick={onAddNew} size="sm">
             <Plus className="mr-2 h-4 w-4" />
-            Adicionar
+            {
+              addresses.length === 0 ? "Adicionar Primeiro Endereço" : "Adicionar Novo"
+            }
           </Button>
         </CardTitle>
       </CardHeader>
@@ -55,9 +57,9 @@ export const AddressList: React.FC<AddressListProps> = ({
           <div className="text-center py-8 text-muted-foreground">
             <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum endereço cadastrado</p>
-            <Button variant="outline" onClick={onAddNew} className="mt-4">
+            {/* <Button variant="outline" onClick={onAddNew} className="mt-4">
               Adicionar Primeiro Endereço
-            </Button>
+            </Button> */}
           </div>
         ) : (
           <div className="space-y-3">
