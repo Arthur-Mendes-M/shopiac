@@ -28,7 +28,7 @@ const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { getAddresses, createAddress } = useApi();
+  const { getAddresses, createAddress, calculateShipping, createTransaction } = useApi();
 
   const [step, setStep] = useState(1); // 1: address, 2: shipping, 3: payment
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -37,6 +37,8 @@ const Checkout = () => {
   const [addressLoading, setAddressLoading] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [shippingOptions, setShippingOptions] = useState<any[]>([]);
+  const [shippingLoading, setShippingLoading] = useState(false);
 
   // Load addresses
   useEffect(() => {
@@ -48,36 +50,52 @@ const Checkout = () => {
   const loadAddresses = async () => {
     try {
       const response = await getAddresses();
-      setAddresses(response.data || []);
+      if (response.success) {
+        setAddresses(response.data || []);
+      } else {
+        toast({
+          title: "Erro",
+          description: response.message || "Erro ao carregar endereços",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Erro ao carregar endereços:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar endereços",
+        variant: "destructive",
+      });
     }
   };
 
-  // Mock shipping options
-  const shippingOptions = [
-    {
-      id: '1',
-      name: 'Correios PAC',
-      price: 15.90,
-      days: '5-7 dias úteis',
-      type: 'normal'
-    },
-    {
-      id: '2', 
-      name: 'Correios SEDEX',
-      price: 29.90,
-      days: '2-3 dias úteis',
-      type: 'express'
-    },
-    {
-      id: '3',
-      name: 'Entrega Expressa',
-      price: 39.90,
-      days: '1-2 dias úteis',
-      type: 'express'
+  const loadShippingOptions = async (address: Address) => {
+    if (!address.zip_code) return;
+    
+    setShippingLoading(true);
+    try {
+      const response = await calculateShipping(items, address.zip_code);
+      if (response.success) {
+        setShippingOptions(response.data.Cotacoes || []);
+        setSelectedShipping(null); // Reset selection
+      } else {
+        toast({
+          title: "Erro",
+          description: response.message || "Erro ao calcular frete",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao calcular frete:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao calcular frete. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setShippingLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -94,17 +112,25 @@ const Checkout = () => {
   const handleCreateAddress = async (address: Address) => {
     setAddressLoading(true);
     try {
-      await createAddress(address);
-      toast({
-        title: "Endereço cadastrado",
-        description: "Endereço salvo com sucesso.",
-      });
-      setShowAddressForm(false);
-      loadAddresses();
-    } catch (error) {
+      const response = await createAddress(address);
+      if (response.success) {
+        toast({
+          title: "Endereço cadastrado",
+          description: response.message || "Endereço salvo com sucesso.",
+        });
+        setShowAddressForm(false);
+        loadAddresses();
+      } else {
+        toast({
+          title: "Erro",
+          description: response.message || "Erro ao salvar endereço",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Erro",
-        description: "Erro ao salvar endereço. Tente novamente.",
+        description: error.message || "Erro ao salvar endereço. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -134,13 +160,14 @@ const Checkout = () => {
     }
 
     setStep(2);
+    loadShippingOptions(selectedAddress);
   };
 
   const handleFinishPurchase = async () => {
-    if (!selectedShipping) {
+    if (!selectedShipping || !selectedAddress) {
       toast({
-        title: "Selecione o frete",
-        description: "Por favor, escolha uma opção de entrega",
+        title: "Dados incompletos",
+        description: "Por favor, complete todos os dados necessários",
         variant: "destructive",
       });
       return;
@@ -149,35 +176,32 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate API call to create transaction
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock Abacate Pay URL
-      const paymentUrl = `https://abacatepay.com/pay/bill_${Math.random().toString(36).substr(2, 9)}`;
-      
-      toast({
-        title: "Pedido criado!",
-        description: "Você será redirecionado para o pagamento",
+      const response = await createTransaction({
+        items,
+        address: selectedAddress,
+        delivery: selectedShipping
       });
+      
+      if (response.success && response.data?.Url) {
+        toast({
+          title: "Pedido criado!",
+          description: "Você será redirecionado para o pagamento",
+        });
 
-      // Clear cart
-      clearCart();
+        // Clear cart
+        clearCart();
+        
+        // Redirect to Abacate Pay
+        window.location.href = response.data.Url;
+        
+      } else {
+        throw new Error(response.message || 'Erro ao criar transação');
+      }
       
-      // In a real implementation, redirect to Abacate Pay
-      // window.location.href = paymentUrl;
-      
-      // For demo, show success message
-      toast({
-        title: "Redirecionamento simulado",
-        description: `URL de pagamento: ${paymentUrl}`,
-      });
-      
-      navigate('/pedidos');
-      
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erro ao processar pedido",
-        description: "Tente novamente em alguns instantes",
+        description: error.message || "Tente novamente em alguns instantes",
         variant: "destructive",
       });
     } finally {
@@ -186,7 +210,7 @@ const Checkout = () => {
   };
 
   const subtotal = getTotalPrice();
-  const shippingCost = selectedShipping?.price || 0;
+  const shippingCost = selectedShipping?.preco || 0;
   const total = subtotal + shippingCost;
 
   if (!isAuthenticated || items.length === 0) {
@@ -280,43 +304,60 @@ const Checkout = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {shippingOptions.map((option) => (
-                    <div
-                      key={option.id}
-                      className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                        selectedShipping?.id === option.id
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:bg-muted/50'
-                      }`}
-                      onClick={() => setSelectedShipping(option)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-4 h-4 rounded-full border-2 ${
-                            selectedShipping?.id === option.id
-                              ? 'border-primary bg-primary'
-                              : 'border-border'
-                          }`} />
-                          <div>
-                            <p className="font-medium">{option.name}</p>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4" />
-                              <span>{option.days}</span>
+                  {shippingLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+                      <p className="text-muted-foreground">Calculando frete...</p>
+                    </div>
+                  ) : shippingOptions.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Nenhuma opção de frete disponível</p>
+                    </div>
+                  ) : (
+                    shippingOptions.map((option) => (
+                      <div
+                        key={option.id_forma_frete}
+                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                          selectedShipping?.id_forma_frete === option.id_forma_frete
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:bg-muted/50'
+                        }`}
+                        onClick={() => setSelectedShipping(option)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-4 h-4 rounded-full border-2 ${
+                              selectedShipping?.id_forma_frete === option.id_forma_frete
+                                ? 'border-primary bg-primary'
+                                : 'border-border'
+                            }`} />
+                            <div>
+                              <p className="font-medium">{option.nome_forma_envio}</p>
+                              <p className="text-sm text-muted-foreground">{option.nome_forma_frete}</p>
+                              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>{option.prazo} dias úteis</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">{formatPrice(option.price)}</p>
+                          <div className="text-right">
+                            <p className="font-semibold">{formatPrice(option.preco)}</p>
+                            <p className="text-xs text-muted-foreground capitalize">{option.tipo_entrega}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
 
                   <div className="flex space-x-2">
                     <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
                       Voltar
                     </Button>
-                    <Button onClick={() => setStep(3)} className="flex-1" disabled={!selectedShipping}>
+                    <Button 
+                      onClick={() => setStep(3)} 
+                      className="flex-1" 
+                      disabled={!selectedShipping || shippingLoading}
+                    >
                       Continuar para Pagamento
                     </Button>
                   </div>
@@ -350,7 +391,7 @@ const Checkout = () => {
                       <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Frete ({selectedShipping?.name}):</span>
+                      <span>Frete ({selectedShipping?.nome_forma_frete}):</span>
                       <span>{formatPrice(shippingCost)}</span>
                     </div>
                     <Separator />

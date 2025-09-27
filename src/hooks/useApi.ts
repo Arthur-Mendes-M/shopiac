@@ -442,7 +442,13 @@ export const useApi = () => {
         },
       });
       
-      return await response.json();
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao buscar endereços');
+      }
+      
+      return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
       return { success: true, data: [] };
@@ -471,15 +477,88 @@ export const useApi = () => {
         }),
       });
       
-      return await response.json();
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao criar endereço');
+      }
+      
+      return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
-      return { success: true, message: 'Endereço criado com sucesso' };
+      throw error; // Re-throw para que o erro seja tratado no componente
+    }
+  };
+
+  const calculateShipping = async (items: any[], cep_destino: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/frete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            id: item.productId,
+            amount: item.quantity
+          })),
+          cep_destino: cep_destino.replace(/\D/g, '')
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao calcular frete');
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error;
+    }
+  };
+
+  const createTransaction = async (orderData: { items: any[], address: any, delivery: any }) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/transation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          delivery_id: orderData.delivery.id_forma_frete,
+          address_id: orderData.address.id,
+          items: orderData.items.map(item => ({
+            id: item.productId,
+            amount: item.quantity
+          }))
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao criar transação');
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error;
     }
   };
 
   return {
     getAddresses,
-    createAddress
+    createAddress,
+    calculateShipping,
+    createTransaction
   };
 };
