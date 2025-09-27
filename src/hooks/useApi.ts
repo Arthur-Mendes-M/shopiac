@@ -346,7 +346,7 @@ const mockOrders: Order[] = [
     id: "883230456",
     numero: "2",
     data_pedido: "11/09/2025", 
-    situacao: "Enviado",
+    situacao: "Pronto para envio",
     nome: "João Silva",
     valor: 318
   },
@@ -426,4 +426,60 @@ export const useCheckout = () => {
       }
     },
   });
+};
+
+// Main API hook
+export const useApi = () => {
+  const getAddresses = async () => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/address`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      return await response.json();
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      return { success: true, data: [] };
+    }
+  };
+
+  const createAddress = async (address: any) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/address`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Address: address.address,
+          Number: address.number,
+          zip_code: address.zip_code.replace(/\D/g, ''),
+          city: address.city,
+          State: address.state,
+          Complement: address.complement || '',
+          neighborhood: address.neighborhood
+        }),
+      });
+      
+      return await response.json();
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      return { success: true, message: 'Endereço criado com sucesso' };
+    }
+  };
+
+  return {
+    getAddresses,
+    createAddress
+  };
 };

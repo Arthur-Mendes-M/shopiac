@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useViaCep } from '@/hooks/useApi';
+import { useViaCep, useApi } from '@/hooks/useApi';
 import { toast } from '@/hooks/use-toast';
 import { 
   CreditCard, 
@@ -21,28 +21,38 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { Address } from '@/types';
+import { AddressList } from '@/components/AddressList';
+import { AddressForm } from '@/components/AddressForm';
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { getAddresses, createAddress } = useApi();
 
   const [step, setStep] = useState(1); // 1: address, 2: shipping, 3: payment
-  const [addressData, setAddressData] = useState<Address>({
-    zip_code: '',
-    address: '',
-    number: '',
-    complement: '',
-    neighborhood: '',
-    city: '',
-    state: ''
-  });
-
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // ViaCEP integration
-  const cepQuery = useViaCep(addressData.zip_code);
+  // Load addresses
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadAddresses();
+    }
+  }, [isAuthenticated]);
+
+  const loadAddresses = async () => {
+    try {
+      const response = await getAddresses();
+      setAddresses(response.data || []);
+    } catch (error) {
+      console.error('Erro ao carregar endereços:', error);
+    }
+  };
 
   // Mock shipping options
   const shippingOptions = [
@@ -81,18 +91,30 @@ const Checkout = () => {
     }
   }, [isAuthenticated, items.length, navigate]);
 
-  // Update address when CEP is found
-  useEffect(() => {
-    if (cepQuery.data && !cepQuery.error) {
-      setAddressData(prev => ({
-        ...prev,
-        address: cepQuery.data.logradouro,
-        neighborhood: cepQuery.data.bairro,
-        city: cepQuery.data.localidade,
-        state: cepQuery.data.uf
-      }));
+  const handleCreateAddress = async (address: Address) => {
+    setAddressLoading(true);
+    try {
+      await createAddress(address);
+      toast({
+        title: "Endereço cadastrado",
+        description: "Endereço salvo com sucesso.",
+      });
+      setShowAddressForm(false);
+      loadAddresses();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar endereço. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddressLoading(false);
     }
-  }, [cepQuery.data, cepQuery.error]);
+  };
+
+  const handleSelectAddress = (address: Address) => {
+    setSelectedAddress(address);
+  };
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -101,26 +123,11 @@ const Checkout = () => {
     }).format(price);
   };
 
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === 'zip_code') {
-      const cleanValue = value.replace(/\D/g, '');
-      const formattedValue = cleanValue.replace(/(\d{5})(\d{3})/, '$1-$2');
-      setAddressData(prev => ({ ...prev, [name]: formattedValue }));
-    } else {
-      setAddressData(prev => ({ ...prev, [name]: value }));
-    }
-  };
-
   const handleAddressSubmit = () => {
-    const requiredFields = ['zip_code', 'address', 'number', 'neighborhood', 'city', 'state'];
-    const missingFields = requiredFields.filter(field => !addressData[field as keyof Address]);
-    
-    if (missingFields.length > 0) {
+    if (!selectedAddress) {
       toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos do endereço",
+        title: "Selecione um endereço",
+        description: "Por favor, selecione um endereço para entrega",
         variant: "destructive",
       });
       return;
@@ -234,123 +241,33 @@ const Checkout = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Step 1: Address */}
             {step === 1 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <MapPin className="mr-2 h-5 w-5" />
-                    Endereço de Entrega
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="zip_code">CEP *</Label>
-                      <Input
-                        id="zip_code"
-                        name="zip_code"
-                        type="text"
-                        placeholder="00000-000"
-                        value={addressData.zip_code}
-                        onChange={handleAddressChange}
-                        maxLength={9}
-                        required
-                      />
-                      {cepQuery.isLoading && (
-                        <p className="text-xs text-muted-foreground">Buscando CEP...</p>
-                      )}
-                      {cepQuery.error && (
-                        <p className="text-xs text-destructive">CEP não encontrado</p>
-                      )}
-                    </div>
+              <div className="space-y-6">
+                {showAddressForm ? (
+                  <AddressForm
+                    onSubmit={handleCreateAddress}
+                    onCancel={() => setShowAddressForm(false)}
+                    isLoading={addressLoading}
+                    title="Novo Endereço de Entrega"
+                  />
+                ) : (
+                  <AddressList
+                    addresses={addresses}
+                    selectedAddressId={selectedAddress?.id}
+                    onSelectAddress={handleSelectAddress}
+                    onAddNew={() => setShowAddressForm(true)}
+                    title="Selecionar Endereço de Entrega"
+                    allowSelection={true}
+                  />
+                )}
 
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Logradouro *</Label>
-                      <Input
-                        id="address"
-                        name="address"
-                        type="text"
-                        placeholder="Rua, Avenida..."
-                        value={addressData.address}
-                        onChange={handleAddressChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="number">Número *</Label>
-                        <Input
-                          id="number"
-                          name="number"
-                          type="text"
-                          placeholder="123"
-                          value={addressData.number}
-                          onChange={handleAddressChange}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="complement">Complemento</Label>
-                        <Input
-                          id="complement"
-                          name="complement"
-                          type="text"
-                          placeholder="Apto, Bloco..."
-                          value={addressData.complement}
-                          onChange={handleAddressChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="neighborhood">Bairro *</Label>
-                      <Input
-                        id="neighborhood"
-                        name="neighborhood"
-                        type="text"
-                        placeholder="Nome do bairro"
-                        value={addressData.neighborhood}
-                        onChange={handleAddressChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">Cidade *</Label>
-                        <Input
-                          id="city"
-                          name="city"
-                          type="text"
-                          placeholder="Cidade"
-                          value={addressData.city}
-                          onChange={handleAddressChange}
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="state">Estado *</Label>
-                        <Input
-                          id="state"
-                          name="state"
-                          type="text"
-                          placeholder="SP"
-                          value={addressData.state}
-                          onChange={handleAddressChange}
-                          maxLength={2}
-                          required
-                        />
-                      </div>
-                    </div>
+                {!showAddressForm && (
+                  <div className="flex justify-end">
+                    <Button onClick={handleAddressSubmit} size="lg" disabled={!selectedAddress}>
+                      Continuar para Frete
+                    </Button>
                   </div>
-
-                  <Button onClick={handleAddressSubmit} className="w-full" size="lg">
-                    Continuar para Frete
-                  </Button>
-                </CardContent>
-              </Card>
+                )}
+              </div>
             )}
 
             {/* Step 2: Shipping */}

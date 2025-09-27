@@ -5,15 +5,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, MapPin, Phone, Mail, CreditCard, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
+import { AddressList } from '@/components/AddressList';
+import { AddressForm } from '@/components/AddressForm';
+import { Address } from '@/types';
+import { useApi } from '@/hooks/useApi';
 
 const MyAccount = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { getAddresses, createAddress } = useApi();
   const [loading, setLoading] = useState(false);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressLoading, setAddressLoading] = useState(false);
 
   const [userData, setUserData] = useState({
     name: user?.name || '',
@@ -21,6 +29,19 @@ const MyAccount = () => {
     phone: user?.phone || '',
     cpf: user?.cpf_cnpj || ''
   });
+
+  useEffect(() => {
+    loadAddresses();
+  }, []);
+
+  const loadAddresses = async () => {
+    try {
+      const response = await getAddresses();
+      setAddresses(response.data || []);
+    } catch (error) {
+      console.error('Erro ao carregar endereços:', error);
+    }
+  };
 
   const handleSaveProfile = async () => {
     setLoading(true);
@@ -32,6 +53,27 @@ const MyAccount = () => {
       });
       setLoading(false);
     }, 1000);
+  };
+
+  const handleCreateAddress = async (address: Address) => {
+    setAddressLoading(true);
+    try {
+      await createAddress(address);
+      toast({
+        title: "Endereço cadastrado",
+        description: "Endereço salvo com sucesso.",
+      });
+      setShowAddressForm(false);
+      loadAddresses();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar endereço. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddressLoading(false);
+    }
   };
 
   return (
@@ -148,24 +190,21 @@ const MyAccount = () => {
                 </CardContent>
               </Card>
 
-              {/* Address Card */}
-              <Card className="animate-scale-in" style={{ animationDelay: '0.1s' }}>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <MapPin className="mr-2 h-5 w-5" />
-                    Endereços Cadastrados
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum endereço cadastrado</p>
-                    <Button variant="outline" className="mt-4 hover:scale-105 transition-all duration-200">
-                      Adicionar Endereço
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Address Section */}
+              <div className="space-y-6">
+                {showAddressForm ? (
+                  <AddressForm
+                    onSubmit={handleCreateAddress}
+                    onCancel={() => setShowAddressForm(false)}
+                    isLoading={addressLoading}
+                  />
+                ) : (
+                  <AddressList
+                    addresses={addresses}
+                    onAddNew={() => setShowAddressForm(true)}
+                  />
+                )}
+              </div>
 
               {/* Security Card */}
               <Card className="animate-scale-in" style={{ animationDelay: '0.2s' }}>
