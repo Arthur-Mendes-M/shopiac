@@ -1,12 +1,20 @@
-import { Layout } from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ProductCard } from '@/components/ProductCard';
-import { useProducts, usePromoProducts } from '@/hooks/useApi';
-import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingBag, Truck, Shield, HeadphonesIcon } from 'lucide-react';
-import SponsorsInfiniteCarousel from '@/components/sponsorsCarousel';
+import { Layout } from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ProductCard } from "@/components/ProductCard";
+import { useProducts, usePromoProducts } from "@/hooks/useApi";
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  ShoppingBag,
+  Truck,
+  Shield,
+  HeadphonesIcon,
+  SearchX,
+} from "lucide-react";
+import SponsorsInfiniteCarousel from "@/components/sponsorsCarousel";
+import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
   const { data: products, isLoading: productsLoading } = useProducts();
@@ -15,44 +23,44 @@ const Index = () => {
   const featuredProducts = products?.slice(0, 4) || [];
   const categories = [
     {
-      name: 'Uniformes',
-      description: 'Camisas, shorts e kits completos',
+      name: "Uniformes",
+      description: "Camisas, shorts e kits completos",
       // image: 'https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=400&h=300&fit=crop',
-      image: '/bone.png',
-      link: '/uniformes'
+      image: "/bone.png",
+      link: "/uniformes",
     },
     {
-      name: 'Canecas',
-      description: 'Canecas térmicas e personalizadas',
+      name: "Canecas",
+      description: "Canecas térmicas e personalizadas",
       // image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop',
-      image: '/caneca.png',
-      link: '/canecas'
+      image: "/caneca.png",
+      link: "/canecas",
     },
     {
-      name: 'Acessórios',
-      description: 'Bandeiras, chaveiros e muito mais',
+      name: "Acessórios",
+      description: "Bandeiras, chaveiros e muito mais",
       // image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
-      image: '/caderno.png',
-      link: '/acessorios'
-    }
+      image: "/caderno.png",
+      link: "/acessorios",
+    },
   ];
 
   const benefits = [
     {
       icon: Truck,
-      title: 'Frete Grátis',
-      description: 'Em compras acima de R$ 199'
+      title: "Frete Grátis",
+      description: "Em compras acima de R$ 199",
     },
     {
       icon: Shield,
-      title: 'Compra Segura',
-      description: 'Seus dados protegidos'
+      title: "Compra Segura",
+      description: "Seus dados protegidos",
     },
     {
       icon: HeadphonesIcon,
-      title: 'Atendimento',
-      description: 'Suporte especializado'
-    }
+      title: "Atendimento",
+      description: "Suporte especializado",
+    },
   ];
 
   return (
@@ -69,19 +77,35 @@ const Index = () => {
                 <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-scale-in">
                   Vista as Cores do Seu Time
                 </h1>
-                <p className="text-xl text-muted-foreground max-w-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                  Uniformes oficiais, acessórios exclusivos e produtos personalizados para você torcer com estilo.
+                <p
+                  className="text-xl text-muted-foreground max-w-lg animate-fade-in"
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  Uniformes oficiais, acessórios exclusivos e produtos
+                  personalizados para você torcer com estilo.
                 </p>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                <Button size="lg" className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 hover:scale-105 transition-all duration-300" asChild>
+
+              <div
+                className="flex flex-col sm:flex-row gap-4 animate-fade-in"
+                style={{ animationDelay: "0.4s" }}
+              >
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 hover:scale-105 transition-all duration-300"
+                  asChild
+                >
                   <Link to="/produtos">
                     <ShoppingBag className="mr-2 h-5 w-5" />
                     Ver Produtos
                   </Link>
                 </Button>
-                <Button variant="outline" size="lg" className="hover:scale-105 transition-all duration-300" asChild>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="hover:scale-105 transition-all duration-300"
+                  asChild
+                >
                   <Link to="/promocoes">
                     Ver Promoções
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -100,7 +124,9 @@ const Index = () => {
                       </div>
                       <div>
                         <p className="font-medium text-sm">{benefit.title}</p>
-                        <p className="text-xs text-muted-foreground">{benefit.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {benefit.description}
+                        </p>
                       </div>
                     </div>
                   );
@@ -128,14 +154,15 @@ const Index = () => {
           <div className="text-center space-y-4 mb-12 animate-scale-in">
             <h2 className="text-3xl font-bold">Nossas Categorias</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Descubra nossa seleção completa de produtos esportivos para todos os gostos
+              Descubra nossa seleção completa de produtos esportivos para todos
+              os gostos
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {categories.map((category, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in hover:scale-[1.02]"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
@@ -148,11 +175,17 @@ const Index = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white animate-slide-in-left">
                     <h3 className="text-xl font-bold mb-1">{category.name}</h3>
-                    <p className="text-sm text-white/80">{category.description}</p>
+                    <p className="text-sm text-white/80">
+                      {category.description}
+                    </p>
                   </div>
                 </div>
                 <CardContent className="p-6">
-                  <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover:scale-105" asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 hover:scale-105"
+                    asChild
+                  >
                     <Link to={category.link}>
                       Ver Categoria
                       <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -166,14 +199,20 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="bg-muted/30 animate-fade-in" id='destaques'>
+      <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12 animate-slide-in-left">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold">Produtos em Destaque</h2>
-              <p className="text-muted-foreground">Os mais vendidos da semana</p>
+              <p className="text-muted-foreground">
+                Os mais vendidos da semana
+              </p>
             </div>
-            <Button variant="outline" className="hover:scale-105 transition-all duration-200" asChild>
+            <Button
+              variant="outline"
+              className="hover:scale-105 transition-all duration-200"
+              asChild
+            >
               <Link to="/produtos">
                 Ver Todos
                 <ArrowRight className="ml-2 h-4 w-4 hover:translate-x-1 transition-transform" />
@@ -196,11 +235,23 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product, index) => (
-                <div key={product.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                  <ProductCard product={product} />
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map((product, index) => (
+                  <div
+                    key={product.id}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-5 min-h-[30vh] col-span-full text-xs opacity-80">
+                  <SearchX className="w-12 h-12 animate-magnifier" />
+                  <span className="px-2 text-xl text-muted-foreground">
+                    Nenhum produto em destaque por enquanto... Volte mais tarde!
+                  </span>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -218,14 +269,18 @@ const Index = () => {
                 <h2 className="text-4xl font-bold animate-slide-in-left">
                   Até 50% OFF em Produtos Selecionados
                 </h2>
-                <p className="text-xl opacity-90 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                  Aproveite nossa mega promoção e garante os melhores produtos com descontos imperdíveis
+                <p
+                  className="text-xl opacity-90 animate-fade-in"
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  Aproveite nossa mega promoção e garante os melhores produtos
+                  com descontos imperdíveis
                 </p>
-                <Button 
-                  size="lg" 
-                  variant="secondary" 
-                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground" 
-                  style={{ animationDelay: '0.4s' }}
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground"
+                  style={{ animationDelay: "0.4s" }}
                   asChild
                 >
                   <Link to="/promocoes">
@@ -240,7 +295,9 @@ const Index = () => {
       </section>
 
       {/* Sponsors Carousel */}
-      <SponsorsInfiniteCarousel />
+      <section className="container animate-fade-in w-full bg-gradient-background py-20 mx-auto">
+        <SponsorsInfiniteCarousel />
+      </section>
     </Layout>
   );
 };

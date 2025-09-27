@@ -84,11 +84,27 @@ export interface Order {
   id: string;
   numero: string;
   data_pedido: string;
-  situacao: string;
+  situacao: keyof typeof OrderStatusMapper;
   nome: string;
   valor: number;
 }
 
+export const OrderStatusMapper = {
+  'Em aberto': 'Aguardando pagamento',
+  'Aprovado': 'Pagamento aprovado',
+  'Pronto para envio': 'Pedido pronto para envio',
+  'Entregue': 'Pedido entregue',
+}
+
+// ---------- New statuses ----------
+  // 'Enviado': 'Pedido enviado',
+  // 'Em separação': 'Pedido em separação',
+  // 'Em embalagem': 'Pedido em embalagem',
+  // 'Despachado': 'Pedido despachado',
+  // 'Em transporte': 'Pedido em transporte',
+  // 'Saiu para entrega': 'Pedido saiu para entrega',
+  // 'Devolvido': 'Pedido devolvido',
+  // 'Cancelado': 'Pedido cancelado'
 export interface LoginData {
   email: string;
   password: string;

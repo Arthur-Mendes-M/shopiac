@@ -170,15 +170,6 @@ const Login = () => {
                   </Button>
                 </div>
               </div>
-
-              {/* Demo Info */}
-              <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-                <h4 className="font-semibold text-sm mb-2">🎯 Dados para teste:</h4>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p><strong>E-mail:</strong> test@shopiac.com</p>
-                  <p><strong>Senha:</strong> 123456</p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

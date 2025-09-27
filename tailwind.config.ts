@@ -119,28 +119,36 @@ export default {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" }
         },
-				'infinite-horizontal-scroll': {
-					'0%': { transform: 'translateX(0)' },
-					'100%': { transform: 'translateX(-100%)' }
-				},
+        'infinite-horizontal-scroll': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' }
+        },
+        'magnifier': {
+          '0%': { transform: 'translate(0,0)' },
+          '25%': { transform: 'translate(-10px,-10px)' },
+          '50%': { transform: 'translate(-10px,10px)' },
+          '75%': { transform: 'translate(10px,-10px)' },
+          '100%': { transform: 'translate(0,0)' },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
-  "fade-out": "fade-out 0.3s ease-out",
-  "scale-in": "scale-in 0.2s ease-out",
-  "scale-out": "scale-out 0.2s ease-out",
-  "slide-in-right": "slide-in-right 0.3s ease-out",
-  "slide-out-right": "slide-out-right 0.3s ease-out",
-  "slide-in-bottom": "slide-in-bottom 0.3s ease-out",
-  "slide-out-bottom": "slide-out-bottom 0.3s ease-out",
+        "fade-out": "fade-out 0.3s ease-out",
+        "scale-in": "scale-in 0.2s ease-out",
+        "scale-out": "scale-out 0.2s ease-out",
+        "slide-in-right": "slide-in-right 0.3s ease-out",
+        "slide-out-right": "slide-out-right 0.3s ease-out",
+        "slide-in-bottom": "slide-in-bottom 0.3s ease-out",
+        "slide-out-bottom": "slide-out-bottom 0.3s ease-out",
         "slide-in-left": "slide-in-left 0.3s ease-out",
         "bounce-in": "bounce-in 0.6s ease-out",
         "float": "float 3s ease-in-out infinite",
         "enter": "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
         "exit": "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
         'infinite-horizontal-scroll': 'infinite-horizontal-scroll 30s linear infinite',
+        'magnifier': 'magnifier 10s infinite ease-in-out',
       },
     },
   },

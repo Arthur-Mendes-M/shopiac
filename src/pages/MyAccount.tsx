@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
 import { User, MapPin, Phone, Mail, CreditCard, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
 
 const MyAccount = () => {
   const { user } = useAuth();
@@ -100,10 +101,10 @@ const MyAccount = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="cpf">CPF</Label>
+                      <Label htmlFor="cpf">CPF/CNPJ</Label>
                       <Input
                         id="cpf"
-                        value={userData.cpf}
+                        value={cpfCNPJFormatter(userData.cpf)}
                         onChange={(e) => setUserData(prev => ({ ...prev, cpf: e.target.value }))}
                         disabled
                         className="bg-muted"
@@ -126,7 +127,7 @@ const MyAccount = () => {
                       <Label htmlFor="phone">Telefone</Label>
                       <Input
                         id="phone"
-                        value={userData.phone}
+                        value={formatPhoneNumber(userData.phone)}
                         onChange={(e) => setUserData(prev => ({ ...prev, phone: e.target.value }))}
                         className="transition-all duration-200 focus:scale-[1.02]"
                       />

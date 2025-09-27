@@ -11,6 +11,7 @@ import { useRegister, useViaCep } from '@/hooks/useApi';
 import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff, UserPlus, MapPin } from 'lucide-react';
 import { Address } from '@/types';
+import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -121,34 +122,7 @@ const Register = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'cpf_cnpj') {
-      const cleanValue = value.replace(/\D/g, '');
-      let formattedValue = cleanValue;
-      
-      if (cleanValue.length <= 11) {
-        formattedValue = cleanValue
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d{1,2})/, '$1-$2');
-      } else {
-        formattedValue = cleanValue
-          .replace(/(\d{2})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1.$2')
-          .replace(/(\d{3})(\d)/, '$1/$2')
-          .replace(/(\d{4})(\d{1,2})/, '$1-$2');
-      }
-      
-      setFormData(prev => ({ ...prev, [name]: formattedValue }));
-    } else if (name === 'phone') {
-      const cleanValue = value.replace(/\D/g, '');
-      const formattedValue = cleanValue
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d{4})/, '$1-$2');
-      
-      setFormData(prev => ({ ...prev, [name]: formattedValue }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -251,7 +225,7 @@ const Register = () => {
                           name="cpf_cnpj"
                           type="text"
                           placeholder="000.000.000-00"
-                          value={formData.cpf_cnpj}
+                          value={cpfCNPJFormatter(formData.cpf_cnpj)}
                           onChange={handleInputChange}
                           maxLength={18}
                           required
@@ -265,7 +239,7 @@ const Register = () => {
                           name="phone"
                           type="text"
                           placeholder="(11) 99999-9999"
-                          value={formData.phone}
+                          value={formatPhoneNumber(formData.phone)}
                           onChange={handleInputChange}
                           maxLength={15}
                           required
