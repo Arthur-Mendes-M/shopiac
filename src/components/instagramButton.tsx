@@ -8,7 +8,7 @@ export default function InstagramButton() {
       to={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group fixed bottom-6 right-6 z-50 flex animate-slide-in-right items-center hover:gap-2s bg-gradient-to-r from-[#833ab4]/50 via-[#fd1d1d]/50 to-[#fcb045]/50 text-white px-3 py-3 rounded-full shadow-lg transition-all duration-300"
+      className="group fixed bottom-[5rem] md:bottom-6 right-5 z-50 flex animate-slide-in-right items-center hover:gap-2s bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white px-3 py-3 rounded-full shadow-lg transition-all duration-300"
     >
       <svg role="img" viewBox="0 0 24 24" className="w-6 h-5" xmlns="http://www.w3.org/2000/svg">
         <title>Instagram</title>
