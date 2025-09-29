@@ -489,12 +489,13 @@ const Checkout = () => {
                       placeholder="Digite o cupom"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      disabled={!!appliedCoupon}
+                      // disabled={!!appliedCoupon}
+                      disabled={true}
                     />
                     {appliedCoupon ? (
                       <Button
                         variant="outline"
-                        size="sm"
+                        // size="sm"
                         onClick={() => {
                           setAppliedCoupon(null);
                           setCouponCode("");
@@ -509,7 +510,7 @@ const Checkout = () => {
                     ) : (
                       <Button
                         variant="outline"
-                        size="sm"
+                        // size="sm"
                         onClick={() => {
                           if (couponCode.trim()) {
                             setAppliedCoupon(couponCode.trim());
@@ -519,7 +520,8 @@ const Checkout = () => {
                             });
                           }
                         }}
-                        disabled={!couponCode.trim()}
+                        // disabled={!couponCode.trim()}
+                        disabled={true}
                       >
                         Aplicar
                       </Button>
