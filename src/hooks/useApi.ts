@@ -388,46 +388,46 @@ export const useOrders = () => {
   });
 };
 
-export const useCheckout = () => {
-  return useMutation({
-    mutationFn: async (orderData: { items: any[], address: any, delivery: any }) => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE}/transation`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            delivery_id: orderData.delivery.id_forma_frete,
-            address_id: orderData.address.id,
-            items: orderData.items.map(item => ({
-              id: item.productId,
-              amount: item.quantity
-            }))
-          }),
-        });
+// export const useCheckout = () => {
+//   return useMutation({
+//     mutationFn: async (orderData: { items: any[], address: any, delivery: any }) => {
+//       try {
+//         const token = localStorage.getItem('token');
+//         const response = await fetch(`${API_BASE}/transation`, {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
+//           },
+//           body: JSON.stringify({
+//             delivery_id: orderData.delivery.id_forma_frete,
+//             address_id: orderData.address.id,
+//             items: orderData.items.map(item => ({
+//               id: item.productId,
+//               amount: item.quantity
+//             }))
+//           }),
+//         });
         
-        const result = await response.json();
+//         const result = await response.json();
         
-        if (result.success) {
-          return result;
-        }
-        throw new Error(result.message || 'Erro no checkout');
-      } catch (error) {
-        console.warn('API não disponível, usando dados mock:', error);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        return {
-          success: true,
-          data: {
-            Url: "https://abacatepay.com/pay/bill_example123"
-          }
-        };
-      }
-    },
-  });
-};
+//         if (result.success) {
+//           return result;
+//         }
+//         throw new Error(result.message || 'Erro no checkout');
+//       } catch (error) {
+//         console.warn('API não disponível, usando dados mock:', error);
+//         await new Promise(resolve => setTimeout(resolve, 2000));
+//         return {
+//           success: true,
+//           data: {
+//             Url: "https://abacatepay.com/pay/bill_example123"
+//           }
+//         };
+//       }
+//     },
+//   });
+// };
 
 // Main API hook
 export const useApi = () => {
@@ -537,7 +537,7 @@ export const useApi = () => {
           delivery_id: orderData.delivery.id_forma_frete,
           address_id: orderData.address.id,
           items: orderData.items.map(item => ({
-            id: item.productId,
+            id: item.variationId || item.productId,
             amount: item.quantity
           }))
         }),

@@ -182,7 +182,6 @@ const MyOrders = () => {
 
                     <div className="flex justify-between flex-wrap gap-1 items-center">
                       <div className="space-y-1">
-                        <p className="font-medium">Cliente: {order.nome}</p>
                         <p className="text-sm text-muted-foreground">
                           ID do pedido: {order.id}
                         </p>
