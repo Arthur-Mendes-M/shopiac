@@ -64,6 +64,6 @@ export const LogoIcon: React.FC<LogoIconProps> = ({ className = "" }) => {
   // );
 
   return (
-    <img src="/logo.png" alt="Logo do Itaquá Athlético Clube" className={cn("", className)} />
+    <img src="/cropped_logo.png" alt="Logo do Itaquá Athlético Clube" className={cn("", className)} />
   )
 };

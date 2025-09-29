@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
-import { User, MapPin, Phone, Mail, CreditCard, Settings } from 'lucide-react';
+import { User, MapPin, Phone, Mail, CreditCard, Settings, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
 import { AddressList } from '@/components/AddressList';
@@ -119,12 +119,8 @@ const MyAccount = () => {
                     Endereços
                   </Button>
                   <Button variant="ghost" className="w-full justify-start">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Métodos de Pagamento
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-start">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Configurações
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    Alterar senha
                   </Button>
                 </CardContent>
               </Card>
@@ -214,24 +210,6 @@ const MyAccount = () => {
                   />
                 )}
               </div>
-
-              {/* Security Card */}
-              <Card className="animate-scale-in" style={{ animationDelay: '0.2s' }}>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Settings className="mr-2 h-5 w-5" />
-                    Segurança
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start hover:scale-[1.02] transition-all duration-200">
-                    Alterar Senha
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start hover:scale-[1.02] transition-all duration-200">
-                    Configurar Autenticação em Duas Etapas
-                  </Button>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>

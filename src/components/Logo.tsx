@@ -8,7 +8,7 @@ interface LogoProps {
 
 export const Logo: React.FC<LogoProps> = ({ className = "", showText = true }) => {
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       {/* SVG Logo - Shield with Chief */}
       <LogoIcon className="h-12" />
 

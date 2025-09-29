@@ -39,7 +39,7 @@ export const AddressList: React.FC<AddressListProps> = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center flex-wrap gap-2 justify-between">
           <div className="flex items-center">
             <MapPin className="mr-2 h-5 w-5" />
             {title}
