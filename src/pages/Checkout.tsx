@@ -39,6 +39,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [shippingOptions, setShippingOptions] = useState<any[]>([]);
   const [shippingLoading, setShippingLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
   // Load addresses
   useEffect(() => {
@@ -179,7 +181,8 @@ const Checkout = () => {
       const response = await createTransaction({
         items,
         address: selectedAddress,
-        delivery: selectedShipping
+        delivery: selectedShipping,
+        coupon: appliedCoupon || undefined,
       });
       
       if (response.success && response.data?.Url) {
@@ -473,6 +476,59 @@ const Checkout = () => {
                       <span>Frete:</span>
                       <span>{formatPrice(shippingCost)}</span>
                     </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Cupom de Desconto */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Cupom de Desconto</label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Digite o cupom"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      disabled={!!appliedCoupon}
+                    />
+                    {appliedCoupon ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setCouponCode("");
+                          toast({
+                            title: "Cupom removido",
+                            description: "O cupom foi removido do pedido.",
+                          });
+                        }}
+                      >
+                        Remover
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (couponCode.trim()) {
+                            setAppliedCoupon(couponCode.trim());
+                            toast({
+                              title: "Cupom aplicado!",
+                              description: `Cupom "${couponCode}" será validado no checkout.`,
+                            });
+                          }
+                        }}
+                        disabled={!couponCode.trim()}
+                      >
+                        Aplicar
+                      </Button>
+                    )}
+                  </div>
+                  {appliedCoupon && (
+                    <p className="text-xs text-green-600">
+                      Cupom "{appliedCoupon}" aplicado ✓
+                    </p>
                   )}
                 </div>
 

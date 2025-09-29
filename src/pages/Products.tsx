@@ -17,7 +17,7 @@ const Products = () => {
   // Detect category from URL path
   const getCategory = () => {
     if (location.pathname === '/uniformes') return 'Uniforme';
-    if (location.pathname === '/canecas') return 'Canecas';
+    if (location.pathname === '/canecas') return 'Caneca';
     if (location.pathname === '/acessorios') return 'Acessórios';
     if (location.pathname === '/promocoes') return 'promo';
     return searchParams.get('categoria');
@@ -27,7 +27,6 @@ const Products = () => {
   const searchTerm = searchParams.get('busca');
   
   const { data: allProducts, isLoading } = useProducts();
-  console.log("All Products:", allProducts);
   const { data: categoryProducts, isLoading: categoryLoading } = useProductsByCategory(category || '');
   const { data: promoProducts, isLoading: promoLoading } = usePromoProducts();
   
@@ -35,8 +34,16 @@ const Products = () => {
   const [sortBy, setSortBy] = useState('name');
   
   // Determina quais produtos mostrar
-  const products = category ? categoryProducts : allProducts;
-  const loading = category ? categoryLoading : isLoading;
+  let products = allProducts;
+  let loading = isLoading;
+  
+  if (category === 'promo') {
+    products = promoProducts;
+    loading = promoLoading;
+  } else if (category) {
+    products = categoryProducts;
+    loading = categoryLoading;
+  }
   
   // Filtra por busca se houver
   const filteredProducts = products?.filter(product => 

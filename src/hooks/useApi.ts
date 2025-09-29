@@ -522,25 +522,33 @@ export const useApi = () => {
     }
   };
 
-  const createTransaction = async (orderData: { items: any[], address: any, delivery: any }) => {
+  const createTransaction = async (orderData: { items: any[], address: any, delivery: any, coupon?: string }) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
     
     try {
       const token = localStorage.getItem('token');
+      
+      const body: any = {
+        delivery_id: orderData.delivery.id_forma_frete,
+        address_id: orderData.address.id,
+        items: orderData.items.map(item => ({
+          id: item.variationId || item.productId,
+          amount: item.quantity
+        }))
+      };
+
+      // Adicionar cupom se fornecido
+      if (orderData.coupon) {
+        body.coupon = orderData.coupon;
+      }
+
       const response = await fetch(`${API_BASE_URL}/transation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          delivery_id: orderData.delivery.id_forma_frete,
-          address_id: orderData.address.id,
-          items: orderData.items.map(item => ({
-            id: item.variationId || item.productId,
-            amount: item.quantity
-          }))
-        }),
+        body: JSON.stringify(body),
       });
       
       const result = await response.json();

@@ -6,11 +6,20 @@ import { Separator } from "@/components/ui/separator";
 import { useOrders } from "@/hooks/useApi";
 import { Package, Truck, CheckCircle, Clock, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
-import { OrderStatusMapper } from "@/types";
+import { OrderStatusMapper, Order } from "@/types";
 import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 const MyOrders = () => {
   const { data: orders, isLoading } = useOrders();
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [filterBy, setFilterBy] = useState<
     keyof typeof OrderStatusMapper | "Todos"
   >("Todos");
@@ -192,6 +201,10 @@ const MyOrders = () => {
                           variant="outline"
                           size="sm"
                           className="hover:scale-105 transition-all duration-200"
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setSheetOpen(true);
+                          }}
                         >
                           <Eye className="mr-2 h-4 w-4" />
                           Ver Detalhes
@@ -250,6 +263,83 @@ const MyOrders = () => {
             </div>
           )}
         </div>
+
+        {/* Order Detail Sheet */}
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+            {selectedOrder && (
+              <>
+                <SheetHeader>
+                  <SheetTitle>Detalhes do Pedido</SheetTitle>
+                  <SheetDescription>
+                    Pedido #{selectedOrder.numero} • {selectedOrder.data_pedido}
+                  </SheetDescription>
+                </SheetHeader>
+
+                <div className="mt-6 space-y-6">
+                  {/* Status */}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                      Status do Pedido
+                    </h3>
+                    <Badge className={getStatusColor(selectedOrder.situacao)}>
+                      {getStatusIcon(selectedOrder.situacao)}
+                      {OrderStatusMapper[selectedOrder.situacao] || selectedOrder.situacao}
+                    </Badge>
+                  </div>
+
+                  <Separator />
+
+                  {/* Informações do Pedido */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Informações
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">ID do Pedido:</span>
+                        <span className="font-medium">{selectedOrder.id}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Número:</span>
+                        <span className="font-medium">#{selectedOrder.numero}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Data:</span>
+                        <span className="font-medium">{selectedOrder.data_pedido}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Valor Total */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Valor Total
+                    </h3>
+                    <div className="text-2xl font-bold text-primary">
+                      R$ {selectedOrder.valor.toFixed(2)}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Ações */}
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setSheetOpen(false)}
+                    >
+                      Fechar
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </SheetContent>
+        </Sheet>
       </div>
     </Layout>
   );

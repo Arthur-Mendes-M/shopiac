@@ -7,7 +7,7 @@ import {
   Home,
   Package,
   Coffee,
-  Zap,
+  Flame,
   EllipsisVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export const MobileMenu = () => {
     { to: "/uniformes", label: "Uniformes", icon: Package },
     { to: "/canecas", label: "Canecas", icon: Coffee },
     { to: "/acessorios", label: "Acessórios", icon: Package },
-    { to: "/promocoes", label: "Promoções", icon: Zap },
+    { to: "/promocoes", label: "Promoções", icon: Flame },
   ];
 
   return (
@@ -71,7 +71,7 @@ export const MobileMenu = () => {
             to="/promocoes"
             className="flex flex-col items-center space-y-1 p-2 rounded-md hover:bg-muted transition-colors"
           >
-            <Zap className="h-5 w-5" />
+            <Flame className="h-5 w-5" />
             <span className="text-xs">Promoções</span>
           </Link>
 

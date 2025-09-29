@@ -56,7 +56,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('user');
   };
 
-  const isAuthenticated = !!token && !!user;
+  // Compute isAuthenticated considering loading state
+  const isAuthenticated = !loading && !!token && !!user;
 
   return (
     <AuthContext.Provider
