@@ -33,3 +33,14 @@ export function formatCEP(value: string) {
   // Formata como 00000-000
   return cleanedValue.replace(/(\d{5})(\d{3})/, '$1-$2');
 }
+
+export function passwordIsFormatted(password: string) {
+  const hasNumber = /\d/.test(password);
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasSpecialChar = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(password);
+  return hasNumber && hasLetter && hasSpecialChar && password.length >= 8;
+}
+
+export function passwordsAreEqual(a: string, b: string) {
+  return a === b;
+}

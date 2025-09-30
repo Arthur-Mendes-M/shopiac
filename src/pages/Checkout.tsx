@@ -64,8 +64,8 @@ const Checkout = () => {
     } catch (error) {
       console.error('Erro ao carregar endereços:', error);
       toast({
-        title: "Erro",
-        description: "Erro ao carregar endereços",
+        title: "Erro ao carregar endereços",
+        description: error instanceof Error ? error.message : "Tente novamente.",
         variant: "destructive",
       });
     }
@@ -90,8 +90,8 @@ const Checkout = () => {
     } catch (error) {
       console.error('Erro ao calcular frete:', error);
       toast({
-        title: "Erro",
-        description: "Erro ao calcular frete. Tente novamente.",
+        title: "Erro ao calcular frete",
+        description: error instanceof Error ? error.message : "Tente novamente.",
         variant: "destructive",
       });
     } finally {

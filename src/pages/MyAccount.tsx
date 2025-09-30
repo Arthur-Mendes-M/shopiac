@@ -1,33 +1,36 @@
-import { Layout } from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
-import { User, MapPin, Phone, Mail, CreditCard, Settings, KeyRound } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
-import { AddressList } from '@/components/AddressList';
-import { AddressForm } from '@/components/AddressForm';
-import { Address } from '@/types';
-import { useApi } from '@/hooks/useApi';
+import { Layout } from "@/components/Layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { User, MapPin, KeyRound } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { cpfCNPJFormatter, formatPhoneNumber } from "@/lib/utils";
+import { AddressList } from "@/components/AddressList";
+import { AddressForm } from "@/components/AddressForm";
+import { Address } from "@/types";
+import { useApi } from "@/hooks/useApi";
+import { SecurityDialog } from "@/components/securityDialog";
+import { Navigate } from "react-router-dom";
 
 const MyAccount = () => {
-  const { user } = useAuth();
+  const { user, updateUser: updateSavedUserData, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const { getAddresses, createAddress } = useApi();
+  const { getAddresses, createAddress, updateUser } = useApi();
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [isSecurityOpen, setIsSecurityOpen] = useState(false);
 
   const [userData, setUserData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    cpf: user?.cpf_cnpj || ''
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    cpf: user?.cpf_cnpj || "",
   });
 
   useEffect(() => {
@@ -36,10 +39,10 @@ const MyAccount = () => {
 
   useEffect(() => {
     setUserData({
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      cpf: user?.cpf_cnpj || ''
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      cpf: user?.cpf_cnpj || "",
     });
   }, [user]);
 
@@ -48,20 +51,46 @@ const MyAccount = () => {
       const response = await getAddresses();
       setAddresses(response.data || []);
     } catch (error) {
-      console.error('Erro ao carregar endereços:', error);
+      toast({
+        title: "Erro ao carregar endereços",
+        description:
+          error instanceof Error ? error.message : "Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleSaveProfile = async () => {
     setLoading(true);
-    // Simular API call
-    setTimeout(() => {
+
+    try {
+      await updateUser({
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+      });
+
+      updateSavedUserData({
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+      });
+
       toast({
         title: "Perfil atualizado",
         description: "Suas informações foram salvas com sucesso.",
       });
       setLoading(false);
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar perfil.",
+        description:
+          error instanceof Error ? error.message : "Tente novamente.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      return;
+    }
   };
 
   const handleCreateAddress = async (address: Address) => {
@@ -76,8 +105,9 @@ const MyAccount = () => {
       loadAddresses();
     } catch (error) {
       toast({
-        title: "Erro",
-        description: "Erro ao salvar endereço. Tente novamente.",
+        title: "Erro ao salvar endereço",
+        description:
+          error instanceof Error ? error.message : "Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -85,13 +115,21 @@ const MyAccount = () => {
     }
   };
 
+  if (!isAuthenticated) {
+    console.log("NÃO TA ");
+    Navigate({ to: "/login", replace: true });
+    // return null;
+  }
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 animate-fade-in">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Minha Conta</h1>
-            <p className="text-muted-foreground">Gerencie suas informações pessoais e preferências</p>
+            <p className="text-muted-foreground">
+              Gerencie suas informações pessoais e preferências
+            </p>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
@@ -105,7 +143,9 @@ const MyAccount = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold">{user?.name}</h3>
-                      <p className="text-sm text-muted-foreground">{user?.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {user?.email}
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
@@ -118,7 +158,11 @@ const MyAccount = () => {
                     <MapPin className="mr-2 h-4 w-4" />
                     Endereços
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start">
+                  <Button
+                    onClick={() => setIsSecurityOpen(true)}
+                    variant="ghost"
+                    className="w-full justify-start"
+                  >
                     <KeyRound className="mr-2 h-4 w-4" />
                     Alterar senha
                   </Button>
@@ -143,7 +187,12 @@ const MyAccount = () => {
                       <Input
                         id="name"
                         value={userData.name}
-                        onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setUserData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         className="transition-all duration-200 focus:scale-[1.02]"
                       />
                     </div>
@@ -152,13 +201,18 @@ const MyAccount = () => {
                       <Input
                         id="cpf"
                         value={cpfCNPJFormatter(userData.cpf)}
-                        onChange={(e) => setUserData(prev => ({ ...prev, cpf: e.target.value }))}
+                        onChange={(e) =>
+                          setUserData((prev) => ({
+                            ...prev,
+                            cpf: e.target.value,
+                          }))
+                        }
                         disabled
                         className="bg-muted"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
@@ -166,7 +220,12 @@ const MyAccount = () => {
                         id="email"
                         type="email"
                         value={userData.email}
-                        onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={(e) =>
+                          setUserData((prev) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
                         className="transition-all duration-200 focus:scale-[1.02]"
                       />
                     </div>
@@ -175,7 +234,13 @@ const MyAccount = () => {
                       <Input
                         id="phone"
                         value={formatPhoneNumber(userData.phone)}
-                        onChange={(e) => setUserData(prev => ({ ...prev, phone: e.target.value }))}
+                        minLength={10}
+                        onChange={(e) =>
+                          setUserData((prev) => ({
+                            ...prev,
+                            phone: e.target.value,
+                          }))
+                        }
                         className="transition-all duration-200 focus:scale-[1.02]"
                       />
                     </div>
@@ -184,8 +249,8 @@ const MyAccount = () => {
                   <Separator />
 
                   <div className="flex justify-end">
-                    <Button 
-                      onClick={handleSaveProfile} 
+                    <Button
+                      onClick={handleSaveProfile}
                       disabled={loading}
                       className="transition-all duration-200 hover:scale-105"
                     >
@@ -207,6 +272,11 @@ const MyAccount = () => {
                   <AddressList
                     addresses={addresses}
                     onAddNew={() => setShowAddressForm(true)}
+                    onDeleteAddress={(deletedAddressId) =>
+                      setAddresses((prev) =>
+                        prev.filter((addr) => addr.id !== deletedAddressId)
+                      )
+                    }
                   />
                 )}
               </div>
@@ -214,6 +284,8 @@ const MyAccount = () => {
           </div>
         </div>
       </div>
+
+      <SecurityDialog open={isSecurityOpen} onOpenChange={setIsSecurityOpen} />
     </Layout>
   );
 };

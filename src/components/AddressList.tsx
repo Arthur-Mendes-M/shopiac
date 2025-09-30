@@ -1,9 +1,11 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Address } from '@/types';
-import { MapPin, Plus, Check } from 'lucide-react';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Address } from "@/types";
+import { MapPin, Plus, Check } from "lucide-react";
+import { toast } from "sonner";
+import { useApi } from "@/hooks/useApi";
 
 interface AddressListProps {
   addresses: Address[];
@@ -12,29 +14,19 @@ interface AddressListProps {
   onAddNew: () => void;
   title?: string;
   allowSelection?: boolean;
+  onDeleteAddress?: (addressId: string) => void;
 }
 
-export const AddressList: React.FC<AddressListProps> = ({ 
-  addresses, 
+export const AddressList: React.FC<AddressListProps> = ({
+  addresses,
   selectedAddressId,
   onSelectAddress,
   onAddNew,
   title = "Endereços Cadastrados",
-  allowSelection = false
+  allowSelection = false,
+  onDeleteAddress
 }) => {
-  const formatAddress = (address: Address) => {
-    const parts = [
-      address.address,
-      address.number,
-      address.complement,
-      address.neighborhood,
-      address.city,
-      address.state,
-      address.zip_code
-    ].filter(Boolean);
-    
-    return parts.join(', ');
-  };
+  const {deleteAddress} = useApi()
 
   return (
     <Card>
@@ -46,9 +38,9 @@ export const AddressList: React.FC<AddressListProps> = ({
           </div>
           <Button onClick={onAddNew} size="sm">
             <Plus className="mr-2 h-4 w-4" />
-            {
-              addresses.length === 0 ? "Adicionar Primeiro Endereço" : "Adicionar Novo"
-            }
+            {addresses.length === 0
+              ? "Adicionar Primeiro Endereço"
+              : "Adicionar Novo"}
           </Button>
         </CardTitle>
       </CardHeader>
@@ -57,9 +49,6 @@ export const AddressList: React.FC<AddressListProps> = ({
           <div className="text-center py-8 text-muted-foreground">
             <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p>Nenhum endereço cadastrado</p>
-            {/* <Button variant="outline" onClick={onAddNew} className="mt-4">
-              Adicionar Primeiro Endereço
-            </Button> */}
           </div>
         ) : (
           <div className="space-y-3">
@@ -68,9 +57,9 @@ export const AddressList: React.FC<AddressListProps> = ({
                 key={address.id}
                 className={`p-4 border rounded-lg transition-colors ${
                   allowSelection && selectedAddressId === address.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted/50'
-                } ${allowSelection ? 'cursor-pointer' : ''}`}
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:bg-muted/50"
+                } ${allowSelection ? "cursor-pointer" : ""}`}
                 onClick={() => allowSelection && onSelectAddress?.(address)}
               >
                 <div className="flex items-start justify-between">
@@ -93,6 +82,28 @@ export const AddressList: React.FC<AddressListProps> = ({
                       {address.zip_code}
                     </Badge>
                   </div>
+
+                  <Button variant="destructive" size="sm" onClick={((e) => {
+                    e.stopPropagation();
+
+                    toast("Você realmente deseja deletar o endereço?", {
+                      action: {
+                        label: "Sim, deletar agora",
+                        onClick: async () => {
+                          try {
+                            await deleteAddress(address.id);
+                            toast.success("Endereço deletado com sucesso.");
+                            onDeleteAddress?.(address.id);
+                          } catch (error) {
+                            toast.error("Erro ao deletar endereço. Tente novamente.");
+                          }
+                        }
+                      }
+                    });
+
+                  })}>
+                    Deletar
+                  </Button>
                 </div>
               </div>
             ))}

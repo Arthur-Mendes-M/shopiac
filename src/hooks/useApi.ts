@@ -332,34 +332,6 @@ export const useRegister = () => {
   });
 };
 
-// Mock data for orders
-const mockOrders: Order[] = [
-  {
-    id: "883259324",
-    numero: "1", 
-    data_pedido: "19/09/2025",
-    situacao: "Em aberto",
-    nome: "João Silva", 
-    valor: 159
-  },
-  {
-    id: "883230456",
-    numero: "2",
-    data_pedido: "11/09/2025", 
-    situacao: "Pronto para envio",
-    nome: "João Silva",
-    valor: 318
-  },
-  {
-    id: "883230457",
-    numero: "3",
-    data_pedido: "05/09/2025",
-    situacao: "Entregue", 
-    nome: "João Silva",
-    valor: 89.90
-  }
-];
-
 export const useOrders = () => {
   return useQuery({
     queryKey: ['orders'],
@@ -491,6 +463,32 @@ export const useApi = () => {
     }
   };
 
+  const deleteAddress = async (addressId: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/address/${addressId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao deletar endereço');
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error; // Re-throw para que o erro seja tratado no componente
+    }
+  };
+
+
   const calculateShipping = async (items: any[], cep_destino: string) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
     
@@ -564,10 +562,74 @@ export const useApi = () => {
     }
   };
 
+  const updateUser = async (user: any) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/user`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: user.name,
+          phone: user.phone,
+          email: user.email
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao atualizar usuário');
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error; // Re-throw para que o erro seja tratado no componente
+    }
+  };
+
+  const updateUserPassword = async ({new_password, old_password}: {old_password: string, new_password: string}) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/user/password`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          old_password: old_password,
+          new_password: new_password
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao atualizar senha');
+      }
+      
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error; // Re-throw para que o erro seja tratado no componente
+    }
+  };
+
   return {
     getAddresses,
     createAddress,
     calculateShipping,
-    createTransaction
+    createTransaction,
+    updateUser,
+    updateUserPassword,
+    deleteAddress
   };
 };

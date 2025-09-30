@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
+// import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ import MyAccount from "./pages/MyAccount";
 import MyOrders from "./pages/MyOrders";
 import NotFound from "./pages/NotFound";
 import { ScrollToTop } from "./components/scrollToTop";
+import { RequireAuth } from "./contexts/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -26,10 +27,17 @@ const App = () => (
       <AuthProvider>
         <CartProvider>
           <TooltipProvider>
-            <Toaster />
-            <Sonner />
+            {/* <Toaster /> */}
+            <Sonner
+              closeButton
+              position="bottom-right"
+              swipeDirections={["bottom", "left", "right", "top"]}
+              visibleToasts={2}
+              style={{ fontSize: 30 }}
+              className="text-2xl"
+            />
             <BrowserRouter>
-              <ScrollToTop  />
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/produtos" element={<Products />} />
@@ -41,9 +49,30 @@ const App = () => (
                 <Route path="/carrinho" element={<Cart />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro" element={<Register />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/minha-conta" element={<MyAccount />} />
-                <Route path="/meus-pedidos" element={<MyOrders />} />
+                <Route
+                  path="/checkout"
+                  element={
+                    <RequireAuth>
+                      <Checkout />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/minha-conta"
+                  element={
+                    <RequireAuth>
+                      <MyAccount />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/meus-pedidos"
+                  element={
+                    <RequireAuth>
+                      <MyOrders />
+                    </RequireAuth>
+                  }
+                />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

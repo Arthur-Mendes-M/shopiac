@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Eye, EyeOff, UserPlus, MapPin } from 'lucide-react';
 import { Address } from '@/types';
 import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
+import { PasswordInput } from '@/components/passwordInput';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -33,7 +34,6 @@ const Register = () => {
     state: ''
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1); // 1: dados pessoais, 2: endereço (opcional)
   
@@ -249,16 +249,15 @@ const Register = () => {
                       <div className="space-y-2">
                         <Label htmlFor="password">Senha *</Label>
                         <div className="relative">
-                          <Input
+                          <PasswordInput
                             id="password"
                             name="password"
-                            type={showPassword ? 'text' : 'password'}
                             placeholder="Mínimo 6 caracteres"
                             value={formData.password}
                             onChange={handleInputChange}
                             required
                           />
-                          <Button
+                          {/* <Button
                             type="button"
                             variant="ghost"
                             size="icon"
@@ -266,7 +265,7 @@ const Register = () => {
                             onClick={() => setShowPassword(!showPassword)}
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
+                          </Button> */}
                         </div>
                       </div>
 

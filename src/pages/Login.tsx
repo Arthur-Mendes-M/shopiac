@@ -9,14 +9,15 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogin } from '@/hooks/useApi';
 import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Lock, User } from 'lucide-react';
+import { Lock, User } from 'lucide-react';
+import { PasswordInput } from '@/components/passwordInput';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
@@ -96,16 +97,15 @@ const Login = () => {
                 <div className="space-y-2">
                   <Label htmlFor="password">Senha</Label>
                   <div className="relative">
-                    <Input
+                    <PasswordInput
                       id="password"
                       name="password"
-                      type={showPassword ? 'text' : 'password'}
                       placeholder="Digite sua senha"
                       value={formData.password}
                       onChange={handleInputChange}
                       required
                     />
-                    <Button
+                    {/* <Button
                       type="button"
                       variant="ghost"
                       size="icon"
@@ -117,7 +117,7 @@ const Login = () => {
                       ) : (
                         <Eye className="h-4 w-4" />
                       )}
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
 
