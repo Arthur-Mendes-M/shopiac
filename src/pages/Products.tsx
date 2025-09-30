@@ -20,11 +20,11 @@ const Products = () => {
     if (location.pathname === '/canecas') return 'Caneca';
     if (location.pathname === '/acessorios') return 'Acessórios';
     if (location.pathname === '/promocoes') return 'promo';
-    return searchParams.get('categoria');
+    return searchParams.get('category');
   };
 
   const category = getCategory();
-  const searchTerm = searchParams.get('busca');
+  const searchTerm = searchParams.get('search');
   
   const { data: allProducts, isLoading } = useProducts();
   const { data: categoryProducts, isLoading: categoryLoading } = useProductsByCategory(category || '');
@@ -111,9 +111,9 @@ const Products = () => {
                         onClick={() => {
                           const params = new URLSearchParams();
                           if (cat.value !== '') {
-                            params.set('categoria', cat.value);
+                            params.set('category', cat.value);
                           }
-                          const newUrl = `/produtos${params.toString() ? '?' + params.toString() : ''}`;
+                          const newUrl = `/products${params.toString() ? '?' + params.toString() : ''}`;
                           navigate(newUrl);
                         }}
                       >
@@ -198,7 +198,7 @@ const Products = () => {
                   <p className="text-muted-foreground mb-4">
                     Tente ajustar os filtros ou fazer uma nova busca
                   </p>
-                  <Button onClick={() => window.location.href = '/produtos'}>
+                  <Button onClick={() => window.location.href = '/products'}>
                     Ver Todos os Produtos
                   </Button>
                 </CardContent>

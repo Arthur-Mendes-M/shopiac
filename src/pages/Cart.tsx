@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
+
 import { 
   ShoppingCart, 
   Plus, 
@@ -15,6 +15,7 @@ import {
   Lock,
   ShoppingBag
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart();
@@ -34,18 +35,15 @@ const Cart = () => {
 
   const handleRemoveItem = (productId: string, variationId?: string) => {
     removeItem(productId, variationId);
-    toast({
-      title: "Item removido",
+    toast.success("Item removido",{
       description: "O produto foi removido do seu carrinho",
     });
   };
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      toast({
-        title: "Login necessário",
+      toast.info("Login necessário",{
         description: "Você precisa fazer login para finalizar a compra",
-        variant: "destructive",
       });
       navigate('/login?redirect=checkout');
       return;
@@ -70,7 +68,7 @@ const Cart = () => {
                 Que tal explorar nossos produtos e encontrar algo especial?
               </p>
               <Button size="lg" asChild>
-                <Link to="/produtos">
+                <Link to="/products">
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   Ir às Compras
                 </Link>
@@ -94,7 +92,7 @@ const Cart = () => {
             </p>
           </div>
           <Button variant="ghost" asChild>
-            <Link to="/produtos">
+            <Link to="/products">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Continuar Comprando
             </Link>
@@ -136,7 +134,7 @@ const Cart = () => {
                           <div>
                             <h3 className="font-semibold">
                               <Link 
-                                to={`/produto/${item.product.id}`}
+                                to={`/product/${item.product.id}`}
                                 className="hover:text-primary transition-colors"
                               >
                                 {item.product.name}
@@ -206,8 +204,7 @@ const Cart = () => {
                 variant="outline"
                 onClick={() => {
                   clearCart();
-                  toast({
-                    title: "Carrinho limpo",
+                  toast("Carrinho limpo", {
                     description: "Todos os itens foram removidos do carrinho",
                   });
                 }}

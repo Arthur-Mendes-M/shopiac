@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types";
 import { useCart } from "@/contexts/CartContext";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -26,14 +26,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     // Removed navigate declaration as it is now at the top level
 
     if (product.variations.length > 0) {
-      return navigate(`/produto/${product.id}`);
+      return navigate(`/product/${product.id}`);
     }
 
     if (isOutOfStock) {
-      toast({
-        title: "Produto indisponível",
+      toast.info("Produto indisponível", {
         description: "Este produto está fora de estoque",
-        variant: "destructive",
       });
       return;
     }
@@ -44,8 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       product: product,
     });
 
-    toast({
-      title: "Produto adicionado!",
+    toast.info("Produto adicionado!", {
       description: `${product.name} foi adicionado ao carrinho`,
     });
   };
@@ -63,7 +60,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 animate-scale-in hover:scale-[1.02] flex flex-col gap-2 justify-between h-full">
-      <Link to={`/produto/${product.id}`}>
+      <Link to={`/product/${product.id}`}>
         <CardContent className="p-4">
           {/* Product Image with hover effect */}
           <div className="aspect-square relative mb-4 overflow-hidden rounded-lg bg-muted">

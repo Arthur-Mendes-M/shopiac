@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogin } from '@/hooks/useApi';
-import { toast } from '@/hooks/use-toast';
 import { Lock, User } from 'lucide-react';
 import { PasswordInput } from '@/components/passwordInput';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -29,10 +29,8 @@ const Login = () => {
     e.preventDefault();
     
     if (!formData.email || !formData.password) {
-      toast({
-        title: "Campos obrigatórios",
+      toast.info("Campos obrigatórios", {
         description: "Por favor, preencha todos os campos",
-        variant: "destructive",
       });
       return;
     }
@@ -41,8 +39,7 @@ const Login = () => {
       onSuccess: (data) => {
         console.log("Login successful:", data);
         authLogin(data.user, data.token);
-        toast({
-          title: "Login realizado!",
+        toast.success("Login realizado!", {
           description: `Bem-vindo, ${data.user.name}!`,
         });
         
@@ -123,7 +120,7 @@ const Login = () => {
 
                 <div className="flex items-center justify-between text-sm">
                   <Link 
-                    to="/esqueci-senha" 
+                    to="/forgot-password" 
                     className="text-primary hover:underline"
                   >
                     Esqueci minha senha
@@ -164,7 +161,7 @@ const Login = () => {
 
                 <div className="mt-6">
                   <Button variant="outline" className="w-full" size="lg" asChild>
-                    <Link to="/cadastro">
+                    <Link to="/register">
                       Criar Conta
                     </Link>
                   </Button>

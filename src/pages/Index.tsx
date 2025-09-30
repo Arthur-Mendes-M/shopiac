@@ -12,11 +12,15 @@ import {
   Shield,
   HeadphonesIcon,
   SearchX,
+  Flame,
+  Zap,
 } from "lucide-react";
 import SponsorsInfiniteCarousel from "@/components/sponsorsCarousel";
 import { Separator } from "@/components/ui/separator";
+import { useTheme } from "@/components/ThemeProvider";
 
 const Index = () => {
+  const { theme } = useTheme();
   const { data: products, isLoading: productsLoading } = useProducts();
   const { data: promoProducts, isLoading: promoLoading } = usePromoProducts();
 
@@ -95,7 +99,7 @@ const Index = () => {
                   className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 hover:scale-105 transition-all duration-300"
                   asChild
                 >
-                  <Link to="/produtos">
+                  <Link to="/products">
                     <ShoppingBag className="mr-2 h-5 w-5" />
                     Ver Produtos
                   </Link>
@@ -137,7 +141,11 @@ const Index = () => {
             <div className="relative animate-slide-in-right">
               <div className="aspect-square relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 to-accent/20 hover:scale-105 transition-transform duration-500">
                 <img
-                  src="/hero-image.png"
+                  src={
+                    theme === "dark"
+                      ? "/hero-image.png"
+                      : "/hero_light_image.png"
+                  }
                   alt="Uniformes esportivos"
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                 />
@@ -198,12 +206,134 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Promo Products */}
+      <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-12 animate-slide-in-left">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold flex items-center gap-2">
+                {" "}
+                <Flame className="w-8 h-8 text-primary" /> Produtos em promoção
+              </h2>
+              <p className="text-muted-foreground">
+                Produtos que estão no precinho pra você levar hoje!
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="hover:scale-105 transition-all duration-200"
+              asChild
+            >
+              <Link to="/promocoes">
+                Ver Todos
+                <ArrowRight className="ml-2 h-4 w-4 hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </div>
+
+          {promoLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="aspect-square bg-muted rounded-t-lg" />
+                  <CardContent className="p-4 space-y-2">
+                    <div className="h-4 bg-muted rounded" />
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-6 bg-muted rounded w-1/2" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {promoProducts.length > 0 ? (
+                promoProducts.slice(0, 4).map((product, index) => (
+                  <div
+                    key={product.id}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-5 min-h-[30vh] col-span-full text-xs opacity-80">
+                  <SearchX className="w-12 h-12 animate-magnifier" />
+                  <span className="px-2 text-xl text-muted-foreground">
+                    Nenhum produto em promoção por enquanto... Volte mais tarde!
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Promotion Banner */}
+      <section className="py-20 animate-fade-in">
+        <div className="container group relative mx-auto px-4">
+          <Card className="relative overflow-hidden full-red-gradient text-primary-foreground animate-scale-in hover:scale-[1.02] transition-all duration-500">
+            <CardContent className="p-12 text-center">
+              <div className="max-w-2xl mx-auto space-y-6">
+                <Badge variant="secondary" className="mb-4 animate-bounce-in">
+                  🔥 Oferta Limitada
+                </Badge>
+                <h2 className="text-4xl font-bold animate-slide-in-left">
+                  Até 50% OFF em Produtos Selecionados
+                </h2>
+                <p
+                  className="text-xl opacity-90 animate-fade-in"
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  Aproveite nossa mega promoção e garante os melhores produtos
+                  com descontos imperdíveis
+                </p>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground"
+                  style={{ animationDelay: "0.4s" }}
+                  asChild
+                >
+                  <Link to="/promocoes">
+                    Ver Promoções
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+
+            <div className="text-sm opacity-65 absolute bottom-2 left-2">
+              <span>* Válido por tempo limitado</span>
+            </div>
+          </Card>
+
+          {/* <img src="/ball.png" className="group-hover:scale-[1.02] size-[80px] object-cover duration-500 transition-all absolute -bottom-4 -left-4 group-hover:-translate-x-8 group-hover:translate-y-8 " /> */}
+
+          <img
+            src="/ball.png"
+            className="group-hover:scale-[1.3] scale-[1.02] size-[50px] md:size-[100px] object-cover duration-500 transition-all absolute bottom-4 right-6 group-hover:translate-x-8 group-hover:translate-y-8 "
+          />
+
+          <img
+            src="/ball.png"
+            className="group-hover:scale-[1.3] size-[65px] md:size-[120px] object-cover duration-500 transition-all absolute -top-4 -left-4 group-hover:-translate-x-8 group-hover:-translate-y-8 "
+          />
+
+          <img
+            src="/ball.png"
+            className="group-hover:scale-[1.3] size-[80px] md:size-[150px] object-cover duration-500 transition-all absolute top-0 -right-4 group-hover:translate-x-8 group-hover:-translate-y-8 "
+          />
+        </div>
+      </section>
+
       {/* Featured Products */}
       <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12 animate-slide-in-left">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold">Produtos em Destaque</h2>
+              <h2 className="text-3xl font-bold  flex items-center gap-2">
+                <Zap className="w-8 h-8 text-primary" /> Produtos em Destaque
+              </h2>
               <p className="text-muted-foreground">
                 Os mais vendidos da semana
               </p>
@@ -213,7 +343,7 @@ const Index = () => {
               className="hover:scale-105 transition-all duration-200"
               asChild
             >
-              <Link to="/produtos">
+              <Link to="/products">
                 Ver Todos
                 <ArrowRight className="ml-2 h-4 w-4 hover:translate-x-1 transition-transform" />
               </Link>
@@ -254,43 +384,6 @@ const Index = () => {
               )}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Promotion Banner */}
-      <section className="py-20 animate-fade-in">
-        <div className="container mx-auto px-4">
-          <Card className="relative overflow-hidden full-red-gradient text-primary-foreground animate-scale-in hover:scale-[1.02] transition-all duration-500">
-            <CardContent className="p-12 text-center">
-              <div className="max-w-2xl mx-auto space-y-6">
-                <Badge variant="secondary" className="mb-4 animate-bounce-in">
-                  🔥 Oferta Limitada
-                </Badge>
-                <h2 className="text-4xl font-bold animate-slide-in-left">
-                  Até 50% OFF em Produtos Selecionados
-                </h2>
-                <p
-                  className="text-xl opacity-90 animate-fade-in"
-                  style={{ animationDelay: "0.2s" }}
-                >
-                  Aproveite nossa mega promoção e garante os melhores produtos
-                  com descontos imperdíveis
-                </p>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground"
-                  style={{ animationDelay: "0.4s" }}
-                  asChild
-                >
-                  <Link to="/promocoes">
-                    Ver Promoções
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform" />
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
 

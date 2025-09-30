@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useViaCep, useApi } from '@/hooks/useApi';
-import { toast } from '@/hooks/use-toast';
+import { useApi } from '@/hooks/useApi';
 import { 
   CreditCard, 
-  MapPin, 
   Truck, 
   Shield, 
   Clock,
@@ -23,6 +18,9 @@ import {
 import { Address } from '@/types';
 import { AddressList } from '@/components/AddressList';
 import { AddressForm } from '@/components/AddressForm';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
+import { CheckoutProductRow } from '@/components/CheckoutProductRow';
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -55,18 +53,14 @@ const Checkout = () => {
       if (response.success) {
         setAddresses(response.data || []);
       } else {
-        toast({
-          title: "Erro",
+        toast.error("Ocorreu um erro", {
           description: response.message || "Erro ao carregar endereços",
-          variant: "destructive",
         });
       }
     } catch (error) {
       console.error('Erro ao carregar endereços:', error);
-      toast({
-        title: "Erro ao carregar endereços",
+      toast.error("Erro ao carregar endereços", {
         description: error instanceof Error ? error.message : "Tente novamente.",
-        variant: "destructive",
       });
     }
   };
@@ -81,18 +75,14 @@ const Checkout = () => {
         setShippingOptions(response.data.Cotacoes || []);
         setSelectedShipping(null); // Reset selection
       } else {
-        toast({
-          title: "Erro",
+        toast.error("Ocorreu um erro", {
           description: response.message || "Erro ao calcular frete",
-          variant: "destructive",
         });
       }
     } catch (error) {
       console.error('Erro ao calcular frete:', error);
-      toast({
-        title: "Erro ao calcular frete",
+      toast.error("Erro ao calcular frete", {
         description: error instanceof Error ? error.message : "Tente novamente.",
-        variant: "destructive",
       });
     } finally {
       setShippingLoading(false);
@@ -105,35 +95,37 @@ const Checkout = () => {
       return;
     }
 
-    if (items.length === 0) {
-      navigate('/carrinho');
-      return;
-    }
+    // if (items.length === 0) {
+    //   navigate('/carrinho');
+    //   return;
+    // }
   }, [isAuthenticated, items.length, navigate]);
 
   const handleCreateAddress = async (address: Address) => {
+    if(addresses.length >= 5) {
+      toast.info("Limite de 5 endereços excedido", {
+        description: "Caso queira cadastrar um novo endereço, apague ao menos um!"
+      });
+      return
+    }
+
     setAddressLoading(true);
     try {
       const response = await createAddress(address);
       if (response.success) {
-        toast({
-          title: "Endereço cadastrado",
+        toast.success("Endereço cadastrado", {
           description: response.message || "Endereço salvo com sucesso.",
         });
         setShowAddressForm(false);
         loadAddresses();
       } else {
-        toast({
-          title: "Erro",
+        toast.error("Ocorreu um erro", {
           description: response.message || "Erro ao salvar endereço",
-          variant: "destructive",
         });
       }
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao salvar endereço. Tente novamente.",
-        variant: "destructive",
+      toast("Erro ao salvar endereço", {
+        description: error.message || "Tente novamente.",
       });
     } finally {
       setAddressLoading(false);
@@ -153,10 +145,8 @@ const Checkout = () => {
 
   const handleAddressSubmit = () => {
     if (!selectedAddress) {
-      toast({
-        title: "Selecione um endereço",
+      toast.info("Atenção, ação necessária", {
         description: "Por favor, selecione um endereço para entrega",
-        variant: "destructive",
       });
       return;
     }
@@ -167,10 +157,8 @@ const Checkout = () => {
 
   const handleFinishPurchase = async () => {
     if (!selectedShipping || !selectedAddress) {
-      toast({
-        title: "Dados incompletos",
+      toast("Dados incompletos", {
         description: "Por favor, complete todos os dados necessários",
-        variant: "destructive",
       });
       return;
     }
@@ -186,9 +174,8 @@ const Checkout = () => {
       });
       
       if (response.success && response.data?.Url) {
-        toast({
-          title: "Pedido criado!",
-          description: "Você será redirecionado para o pagamento",
+        toast.success("Pedido criado!", {
+          description: "Você esta sendo redirecionado para o pagamento...",
         });
 
         // Clear cart
@@ -202,10 +189,8 @@ const Checkout = () => {
       }
       
     } catch (error: any) {
-      toast({
-        title: "Erro ao processar pedido",
+      toast.error("Erro ao processar pedido", {
         description: error.message || "Tente novamente em alguns instantes",
-        variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
@@ -269,7 +254,7 @@ const Checkout = () => {
             {/* Step 1: Address */}
             {step === 1 && (
               <div className="space-y-6">
-                {showAddressForm ? (
+                {(showAddressForm && addresses.length <=4 ) ? (
                   <AddressForm
                     onSubmit={handleCreateAddress}
                     onCancel={() => setShowAddressForm(false)}
@@ -282,6 +267,11 @@ const Checkout = () => {
                     selectedAddressId={selectedAddress?.id}
                     onSelectAddress={handleSelectAddress}
                     onAddNew={() => setShowAddressForm(true)}
+                    onDeleteAddress={(deletedAddressId) =>
+                      setAddresses((prev) =>
+                        prev.filter((addr) => addr.id !== deletedAddressId)
+                      )
+                    }
                     title="Selecionar Endereço de Entrega"
                     allowSelection={true}
                   />
@@ -447,7 +437,7 @@ const Checkout = () => {
 
                     return (
                       <div key={`${item.productId}-${item.variationId || 'no-variation'}`} className="flex justify-between text-sm">
-                        <div className="flex-1">
+                        {/* <div className="flex-1">
                           <p className="font-medium">{item.product.name}</p>
                           {item.variation && (
                             <p className="text-muted-foreground text-xs">
@@ -458,7 +448,9 @@ const Checkout = () => {
                             Qtd: {item.quantity}
                           </p>
                         </div>
-                        <span>{formatPrice(totalItemPrice)}</span>
+                        <span>{formatPrice(totalItemPrice)}</span> */}
+
+                        <CheckoutProductRow cartItem={item} currentStep={step}/>
                       </div>
                     );
                   })}
@@ -499,8 +491,7 @@ const Checkout = () => {
                         onClick={() => {
                           setAppliedCoupon(null);
                           setCouponCode("");
-                          toast({
-                            title: "Cupom removido",
+                          toast.info("Cupom removido", {
                             description: "O cupom foi removido do pedido.",
                           });
                         }}
@@ -514,8 +505,7 @@ const Checkout = () => {
                         onClick={() => {
                           if (couponCode.trim()) {
                             setAppliedCoupon(couponCode.trim());
-                            toast({
-                              title: "Cupom aplicado!",
+                            toast.success("Cupom aplicado!", {
                               description: `Cupom "${couponCode}" será validado no checkout.`,
                             });
                           }

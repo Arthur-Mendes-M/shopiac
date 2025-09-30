@@ -36,7 +36,7 @@ export const AddressList: React.FC<AddressListProps> = ({
             <MapPin className="mr-2 h-5 w-5" />
             {title}
           </div>
-          <Button onClick={onAddNew} size="sm">
+          <Button onClick={onAddNew} size="sm" disabled={addresses.length >= 5}>
             <Plus className="mr-2 h-4 w-4" />
             {addresses.length === 0
               ? "Adicionar Primeiro Endereço"
@@ -86,7 +86,7 @@ export const AddressList: React.FC<AddressListProps> = ({
                   <Button variant="destructive" size="sm" onClick={((e) => {
                     e.stopPropagation();
 
-                    toast("Você realmente deseja deletar o endereço?", {
+                    toast.warning("Você realmente deseja deletar o endereço?", {
                       action: {
                         label: "Sim, deletar agora",
                         onClick: async () => {

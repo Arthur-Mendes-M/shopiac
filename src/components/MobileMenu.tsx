@@ -26,7 +26,7 @@ export const MobileMenu = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/produtos?busca=${encodeURIComponent(searchTerm.trim())}`);
+      navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
       setMobileMenuOpen(false);
     }
   };
@@ -39,7 +39,7 @@ export const MobileMenu = () => {
 
   const navigationItems = [
     { to: "/", label: "Início", icon: Home },
-    { to: "/produtos", label: "Todos os Produtos", icon: Package },
+    { to: "/products", label: "Todos os Produtos", icon: Package },
     { to: "/uniformes", label: "Uniformes", icon: Package },
     { to: "/canecas", label: "Canecas", icon: Coffee },
     { to: "/acessorios", label: "Acessórios", icon: Package },
@@ -60,7 +60,7 @@ export const MobileMenu = () => {
           </Link>
 
           <Link
-            to="/produtos"
+            to="/products"
             className="flex flex-col items-center space-y-1 p-2 rounded-md hover:bg-muted transition-colors"
           >
             <Package className="h-5 w-5" />
@@ -131,7 +131,7 @@ export const MobileMenu = () => {
                       </p>
                     </div>
                     <Link
-                      to="/minha-conta"
+                      to="/account"
                       className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -139,7 +139,7 @@ export const MobileMenu = () => {
                       <span>Minha Conta</span>
                     </Link>
                     <Link
-                      to="/meus-pedidos"
+                      to="/orders"
                       className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-muted rounded-md"
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -170,7 +170,7 @@ export const MobileMenu = () => {
                     <Button
                       className="w-full"
                       onClick={() => {
-                        navigate("/cadastro");
+                        navigate("/register");
                         setMobileMenuOpen(false);
                       }}
                     >

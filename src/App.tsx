@@ -35,20 +35,21 @@ const App = () => (
               visibleToasts={2}
               style={{ fontSize: 30 }}
               className="text-2xl"
+              invert
             />
             <BrowserRouter>
               <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/produtos" element={<Products />} />
-                <Route path="/produto/:id" element={<ProductDetail />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/uniformes" element={<Products />} />
                 <Route path="/canecas" element={<Products />} />
                 <Route path="/acessorios" element={<Products />} />
                 <Route path="/promocoes" element={<Products />} />
-                <Route path="/carrinho" element={<Cart />} />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/cadastro" element={<Register />} />
+                <Route path="/register" element={<Register />} />
                 <Route
                   path="/checkout"
                   element={
@@ -58,7 +59,7 @@ const App = () => (
                   }
                 />
                 <Route
-                  path="/minha-conta"
+                  path="/account"
                   element={
                     <RequireAuth>
                       <MyAccount />
@@ -66,7 +67,7 @@ const App = () => (
                   }
                 />
                 <Route
-                  path="/meus-pedidos"
+                  path="/orders"
                   element={
                     <RequireAuth>
                       <MyOrders />

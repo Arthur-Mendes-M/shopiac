@@ -5,8 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types";
 import { useCart } from "@/contexts/CartContext";
-import { toast } from "@/hooks/use-toast";
-
+import { toast } from "sonner";
 interface HorizontalProductCardProps {
   product: Product;
 }
@@ -32,10 +31,8 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
     }
 
     if (isOutOfStock) {
-      toast({
-        title: "Produto indisponível",
+      toast.info("Produto indisponível", {
         description: "Este produto está fora de estoque",
-        variant: "destructive",
       });
       return;
     }
@@ -46,8 +43,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
       product: product,
     });
 
-    toast({
-      title: "Produto adicionado!",
+    toast.success("Produto adicionado!", {
       description: `${product.name} foi adicionado ao carrinho`,
     });
   };
@@ -65,7 +61,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 animate-scale-in">
-      <Link to={`/produto/${product.id}`}>
+      <Link to={`/product/${product.id}`}>
         <CardContent className="p-4">
           <div className="flex space-x-4">
             {/* Product Image */}

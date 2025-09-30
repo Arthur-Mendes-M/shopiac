@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { User, MapPin, KeyRound } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { cpfCNPJFormatter, formatPhoneNumber } from "@/lib/utils";
 import { AddressList } from "@/components/AddressList";
 import { AddressForm } from "@/components/AddressForm";
@@ -15,10 +14,10 @@ import { Address } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import { SecurityDialog } from "@/components/securityDialog";
 import { Navigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const MyAccount = () => {
   const { user, updateUser: updateSavedUserData, isAuthenticated } = useAuth();
-  const { toast } = useToast();
   const { getAddresses, createAddress, updateUser } = useApi();
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -51,11 +50,9 @@ const MyAccount = () => {
       const response = await getAddresses();
       setAddresses(response.data || []);
     } catch (error) {
-      toast({
-        title: "Erro ao carregar endereços",
+      toast.error( "Erro ao carregar endereços", {
         description:
           error instanceof Error ? error.message : "Tente novamente.",
-        variant: "destructive",
       });
     }
   };
@@ -76,17 +73,14 @@ const MyAccount = () => {
         phone: userData.phone,
       });
 
-      toast({
-        title: "Perfil atualizado",
+      toast.success("Perfil atualizado", {
         description: "Suas informações foram salvas com sucesso.",
       });
       setLoading(false);
     } catch (error) {
-      toast({
-        title: "Erro ao salvar perfil.",
+      toast.error("Erro ao salvar perfil.",{
         description:
           error instanceof Error ? error.message : "Tente novamente.",
-        variant: "destructive",
       });
       setLoading(false);
       return;
@@ -94,21 +88,25 @@ const MyAccount = () => {
   };
 
   const handleCreateAddress = async (address: Address) => {
+    if(addresses.length >= 5) {
+      toast.info("Limite de 5 endereços excedido", {
+        description: "Caso queira cadastrar um novo endereço, apague ao menos um!"
+      });
+      return
+    }
+
     setAddressLoading(true);
     try {
       await createAddress(address);
-      toast({
-        title: "Endereço cadastrado",
+      toast.success("Endereço cadastrado", {
         description: "Endereço salvo com sucesso.",
       });
       setShowAddressForm(false);
       loadAddresses();
     } catch (error) {
-      toast({
-        title: "Erro ao salvar endereço",
+      toast.error("Erro ao salvar endereço", {
         description:
           error instanceof Error ? error.message : "Tente novamente.",
-        variant: "destructive",
       });
     } finally {
       setAddressLoading(false);
@@ -116,7 +114,7 @@ const MyAccount = () => {
   };
 
   if (!isAuthenticated) {
-    console.log("NÃO TA ");
+    // console.log("NÃO TA ");
     Navigate({ to: "/login", replace: true });
     // return null;
   }
@@ -262,7 +260,7 @@ const MyAccount = () => {
 
               {/* Address Section */}
               <div className="space-y-6">
-                {showAddressForm ? (
+                {(showAddressForm && addresses.length <=4 ) ? (
                   <AddressForm
                     onSubmit={handleCreateAddress}
                     onCancel={() => setShowAddressForm(false)}

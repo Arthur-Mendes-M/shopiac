@@ -48,7 +48,7 @@ export function SecurityDialog({
         }
 
         if (!passwordIsFormatted(newPassword)) {
-          toast.warning("A nova senha precisa estar no padrão");
+          toast.warning("Senha muito fraca.", {description: "A senha deve conter 8 ou mais caracteres com ao menos um número, uma letra e um caractere especial."});
           return;
         }
 

@@ -1,93 +1,89 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Layout } from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
-import { useRegister, useViaCep } from '@/hooks/useApi';
-import { toast } from '@/hooks/use-toast';
-import { Eye, EyeOff, UserPlus, MapPin } from 'lucide-react';
-import { Address } from '@/types';
-import { cpfCNPJFormatter, formatPhoneNumber } from '@/lib/utils';
-import { PasswordInput } from '@/components/passwordInput';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Layout } from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRegister, useViaCep } from "@/hooks/useApi";
+import { Eye, EyeOff, UserPlus, MapPin } from "lucide-react";
+import { Address } from "@/types";
+import { cpfCNPJFormatter, formatPhoneNumber, passwordIsFormatted, passwordsAreEqual } from "@/lib/utils";
+import { PasswordInput } from "@/components/passwordInput";
+import { toast } from "sonner";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    cpf_cnpj: ''
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    cpf_cnpj: "",
   });
-  
+
   const [addressData, setAddressData] = useState<Partial<Address>>({
-    zip_code: '',
-    address: '',
-    number: '',
-    complement: '',
-    neighborhood: '',
-    city: '',
-    state: ''
+    zip_code: "",
+    address: "",
+    number: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
   });
 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1); // 1: dados pessoais, 2: endereço (opcional)
-  
+
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
   const { mutate: registerMutation, isPending } = useRegister();
-  
+
   // ViaCEP integration
-  const cepQuery = useViaCep(addressData.zip_code || '');
+  const cepQuery = useViaCep(addressData.zip_code || "");
 
   // Update address when CEP is found
   React.useEffect(() => {
     if (cepQuery.data && !cepQuery.error) {
-      setAddressData(prev => ({
+      setAddressData((prev) => ({
         ...prev,
         address: cepQuery.data.logradouro,
         neighborhood: cepQuery.data.bairro,
         city: cepQuery.data.localidade,
-        state: cepQuery.data.uf
+        state: cepQuery.data.uf,
       }));
     }
   }, [cepQuery.data, cepQuery.error]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (step === 1) {
       // Validate required fields
-      const requiredFields = ['name', 'email', 'password', 'phone', 'cpf_cnpj'];
-      const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
-      
+      const requiredFields = ["name", "email", "password", "phone", "cpf_cnpj"];
+      const missingFields = requiredFields.filter(
+        (field) => !formData[field as keyof typeof formData]
+      );
+
       if (missingFields.length > 0) {
-        toast({
-          title: "Campos obrigatórios",
+        toast.warning("Campos obrigatórios", {
           description: "Por favor, preencha todos os campos obrigatórios",
-          variant: "destructive",
         });
         return;
       }
 
-      if (formData.password !== formData.confirmPassword) {
-        toast({
-          title: "Senhas não conferem",
+      if (!passwordsAreEqual(formData.password, formData.confirmPassword)) {
+        toast.warning("Senhas não conferem", {
           description: "As senhas digitadas não são iguais",
-          variant: "destructive",
         });
         return;
       }
 
-      if (formData.password.length < 6) {
-        toast({
-          title: "Senha muito fraca",
-          description: "A senha deve ter pelo menos 6 caracteres",
-          variant: "destructive",
+      if (!passwordIsFormatted(formData.password)) {
+        toast("Senha muito fraca", {
+          description: "A senha deve ter pelo menos 8 caracteres, incluindo um número, uma letra e um caractere especial",
         });
         return;
       }
@@ -98,62 +94,66 @@ const Register = () => {
     }
 
     // Step 2: Register user
-    const cleanCpf = formData.cpf_cnpj.replace(/\D/g, '');
-    const cleanPhone = formData.phone.replace(/\D/g, '');
+    const cleanCpf = formData.cpf_cnpj.replace(/\D/g, "");
+    const cleanPhone = formData.phone.replace(/\D/g, "");
 
-    registerMutation({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      phone: cleanPhone,
-      cpf_cnpj: cleanCpf
-    }, {
-      onSuccess: (data) => {
-        authLogin(data.user, data.token);
-        toast({
-          title: "Cadastro realizado!",
-          description: `Bem-vindo, ${data.user.name}!`,
-        });
-        navigate('/');
+    registerMutation(
+      {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: cleanPhone,
+        cpf_cnpj: cleanCpf,
+      },
+      {
+        onSuccess: (data) => {
+          authLogin(data.user, data.token);
+          toast.success("Cadastro realizado!", {
+            description: `Bem-vindo, ${data.user.name}!`,
+          });
+          navigate("/");
+        },
       }
-    });
+    );
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'zip_code') {
-      const cleanValue = value.replace(/\D/g, '');
-      const formattedValue = cleanValue.replace(/(\d{5})(\d{3})/, '$1-$2');
-      setAddressData(prev => ({ ...prev, [name]: formattedValue }));
+
+    if (name === "zip_code") {
+      const cleanValue = value.replace(/\D/g, "");
+      const formattedValue = cleanValue.replace(/(\d{5})(\d{3})/, "$1-$2");
+      setAddressData((prev) => ({ ...prev, [name]: formattedValue }));
     } else {
-      setAddressData(prev => ({ ...prev, [name]: value }));
+      setAddressData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const skipAddress = () => {
-    registerMutation({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      phone: formData.phone.replace(/\D/g, ''),
-      cpf_cnpj: formData.cpf_cnpj.replace(/\D/g, '')
-    }, {
-      onSuccess: (data) => {
-        authLogin(data.user, data.token);
-        toast({
-          title: "Cadastro realizado!",
-          description: `Bem-vindo, ${data.user.name}!`,
-        });
-        navigate('/');
+    registerMutation(
+      {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone.replace(/\D/g, ""),
+        cpf_cnpj: formData.cpf_cnpj.replace(/\D/g, ""),
+      },
+      {
+        onSuccess: (data) => {
+          authLogin(data.user, data.token);
+          toast.success("Cadastro realizado!", {
+            description: `Bem-vindo, ${data.user.name}!`,
+          });
+          navigate("/");
+        },
       }
-    });
+    );
   };
 
   return (
@@ -170,19 +170,26 @@ const Register = () => {
                 )}
               </div>
               <CardTitle className="text-2xl">
-                {step === 1 ? 'Criar Conta' : 'Endereço (Opcional)'}
+                {step === 1 ? "Criar Conta" : "Endereço (Opcional)"}
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {step === 1 
-                  ? 'Preencha seus dados para criar sua conta'
-                  : 'Adicione seu endereço ou pule esta etapa'
-                }
+                {step === 1
+                  ? "Preencha seus dados para criar sua conta"
+                  : "Adicione seu endereço ou pule esta etapa"}
               </p>
-              
+
               {/* Step indicator */}
               <div className="flex justify-center space-x-2 pt-4">
-                <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-primary' : 'bg-muted'}`} />
-                <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-primary' : 'bg-muted'}`} />
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    step === 1 ? "bg-primary" : "bg-muted"
+                  }`}
+                />
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    step === 2 ? "bg-primary" : "bg-muted"
+                  }`}
+                />
               </div>
             </CardHeader>
 
@@ -248,16 +255,16 @@ const Register = () => {
 
                       <div className="space-y-2">
                         <Label htmlFor="password">Senha *</Label>
-                        <div className="relative">
-                          <PasswordInput
-                            id="password"
-                            name="password"
-                            placeholder="Mínimo 6 caracteres"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            required
-                          />
-                          {/* <Button
+                        {/* <div className="relative"> */}
+                        <PasswordInput
+                          id="password"
+                          name="password"
+                          placeholder="Mínimo 8 caracteres"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        {/* <Button
                             type="button"
                             variant="ghost"
                             size="icon"
@@ -266,16 +273,23 @@ const Register = () => {
                           >
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </Button> */}
-                        </div>
+                        {/* </div> */}
+
+                        <p className="text-sm text-gray-500 mb-5">
+                          A senha deve conter 8 ou mais caracteres com ao menos
+                          um número, uma letra e um caractere especial.
+                        </p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">Confirmar Senha *</Label>
+                        <Label htmlFor="confirmPassword">
+                          Confirmar Senha *
+                        </Label>
                         <div className="relative">
                           <Input
                             id="confirmPassword"
                             name="confirmPassword"
-                            type={showConfirmPassword ? 'text' : 'password'}
+                            type={showConfirmPassword ? "text" : "password"}
                             placeholder="Digite a senha novamente"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
@@ -286,9 +300,15 @@ const Register = () => {
                             variant="ghost"
                             size="icon"
                             className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
                           >
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </div>
@@ -314,10 +334,14 @@ const Register = () => {
                           maxLength={9}
                         />
                         {cepQuery.isLoading && (
-                          <p className="text-xs text-muted-foreground">Buscando CEP...</p>
+                          <p className="text-xs text-muted-foreground">
+                            Buscando CEP...
+                          </p>
                         )}
                         {cepQuery.error && (
-                          <p className="text-xs text-destructive">CEP não encontrado</p>
+                          <p className="text-xs text-destructive">
+                            CEP não encontrado
+                          </p>
                         )}
                       </div>
 
@@ -328,7 +352,7 @@ const Register = () => {
                           name="address"
                           type="text"
                           placeholder="Rua, Avenida..."
-                          value={addressData.address || ''}
+                          value={addressData.address || ""}
                           onChange={handleAddressChange}
                         />
                       </div>
@@ -366,7 +390,7 @@ const Register = () => {
                           name="neighborhood"
                           type="text"
                           placeholder="Nome do bairro"
-                          value={addressData.neighborhood || ''}
+                          value={addressData.neighborhood || ""}
                           onChange={handleAddressChange}
                         />
                       </div>
@@ -379,7 +403,7 @@ const Register = () => {
                             name="city"
                             type="text"
                             placeholder="Cidade"
-                            value={addressData.city || ''}
+                            value={addressData.city || ""}
                             onChange={handleAddressChange}
                           />
                         </div>
@@ -391,7 +415,7 @@ const Register = () => {
                             name="state"
                             type="text"
                             placeholder="SP"
-                            value={addressData.state || ''}
+                            value={addressData.state || ""}
                             onChange={handleAddressChange}
                             maxLength={2}
                           />
@@ -400,9 +424,9 @@ const Register = () => {
                     </div>
 
                     <div className="space-y-3">
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
+                      <Button
+                        type="submit"
+                        className="w-full"
                         size="lg"
                         disabled={isPending}
                       >
@@ -419,10 +443,10 @@ const Register = () => {
                         )}
                       </Button>
 
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        className="w-full" 
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
                         size="lg"
                         onClick={skipAddress}
                         disabled={isPending}
@@ -430,10 +454,10 @@ const Register = () => {
                         Pular e Criar Conta
                       </Button>
 
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        className="w-full" 
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="w-full"
                         onClick={() => setStep(1)}
                         disabled={isPending}
                       >
@@ -458,10 +482,13 @@ const Register = () => {
                   </div>
 
                   <div className="mt-6">
-                    <Button variant="outline" className="w-full" size="lg" asChild>
-                      <Link to="/login">
-                        Fazer Login
-                      </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      size="lg"
+                      asChild
+                    >
+                      <Link to="/login">Fazer Login</Link>
                     </Button>
                   </div>
                 </div>

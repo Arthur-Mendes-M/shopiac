@@ -45,7 +45,7 @@ export const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      navigate(`/produtos?busca=${encodeURIComponent(searchTerm.trim())}`);
+      navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
 
@@ -57,7 +57,7 @@ export const Header = () => {
   const totalItems = getTotalItems();
 
   const navigationItems = [
-    { to: "/produtos", label: "Todos os Produtos" },
+    { to: "/products", label: "Todos os Produtos" },
     { to: "/uniformes", label: "Uniformes" },
     { to: "/canecas", label: "Canecas" },
     { to: "/acessorios", label: "Acessórios" },
@@ -71,42 +71,6 @@ export const Header = () => {
         <Link to="/" className="animate-fade-in">
           <Logo className="hover:scale-105 transition-transform duration-200" />
         </Link>
-
-        {/* Navigation Links with Categories Dropdown */}
-        {/* <nav className="hidden lg:flex items-center space-x-6">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
-              >
-                Categorias
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="animate-scale-in">
-              <DropdownMenuItem onClick={() => navigate('/uniformes')} className="hover:bg-muted transition-colors">
-                Uniformes
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/canecas')} className="hover:bg-muted transition-colors">
-                Canecas
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/acessorios')} className="hover:bg-muted transition-colors">
-                Acessórios
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate('/produtos')} className="hover:bg-muted transition-colors">
-                Todos os Produtos
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          <Link 
-            to="/promocoes" 
-            className="text-sm font-medium hover:text-primary transition-all duration-200 hover:scale-105 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
-          >
-            Promoções
-          </Link>
-        </nav> */}
 
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList className="flex items-center space-x-6">
@@ -170,7 +134,7 @@ export const Header = () => {
                   <li>
                     <NavigationMenuLink asChild>
                       <Link
-                        to="/produtos"
+                        to="/products"
                         className="block px-2 py-1 rounded hover:bg-muted"
                       >
                         Todos os Produtos
@@ -222,7 +186,7 @@ export const Header = () => {
             variant="ghost"
             size="icon"
             className="relative hover:scale-110 transition-transform duration-200"
-            onClick={() => navigate("/carrinho")}
+            onClick={() => navigate("/cart")}
           >
             <ShoppingCart className="h-5 w-5" />
             {totalItems > 0 && (
@@ -297,7 +261,7 @@ export const Header = () => {
                       <div className="my-1 border-t border-muted" />
                       <NavigationMenuItem asChild>
                         <button
-                          onClick={() => navigate("/minha-conta")}
+                          onClick={() => navigate("/account")}
                           className="hover:bg-muted transition-colors flex items-center w-full px-2 py-1 rounded"
                         >
                           <User className="mr-2 h-4 w-4" />
@@ -306,7 +270,7 @@ export const Header = () => {
                       </NavigationMenuItem>
                       <NavigationMenuItem asChild>
                         <button
-                          onClick={() => navigate("/meus-pedidos")}
+                          onClick={() => navigate("/orders")}
                           className="hover:bg-muted transition-colors flex items-center w-full px-2 py-1 rounded"
                         >
                           <ShoppingCart className="mr-2 h-4 w-4" />
@@ -340,7 +304,7 @@ export const Header = () => {
               </Button>
               <Button
                 size="sm"
-                onClick={() => navigate("/cadastro")}
+                onClick={() => navigate("/register")}
                 className="hover:scale-105 transition-transform duration-200"
               >
                 Cadastrar

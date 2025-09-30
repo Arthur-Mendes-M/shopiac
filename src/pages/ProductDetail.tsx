@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useProductById } from '@/hooks/useApi';
 import { useCart } from '@/contexts/CartContext';
-import { toast } from '@/hooks/use-toast';
 import { 
   ShoppingCart, 
   Heart, 
@@ -20,6 +19,7 @@ import {
   Minus
 } from 'lucide-react';
 import parse from 'html-react-parser';
+import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -61,7 +61,7 @@ const ProductDetail = () => {
                 O produto que você está procurando não existe ou foi removido.
               </p>
               <Button asChild>
-                <Link to="/produtos">Ver Todos os Produtos</Link>
+                <Link to="/products">Ver Todos os Produtos</Link>
               </Button>
             </CardContent>
           </Card>
@@ -88,19 +88,15 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (product.variations.length > 0 && !selectedVariation) {
-      toast({
-        title: "Selecione uma variação",
+      toast.info("Selecione uma variação", {
         description: "Por favor, escolha o tamanho desejado",
-        variant: "destructive",
       });
       return;
     }
 
     if (!isInStock) {
-      toast({
-        title: "Produto indisponível",
+      toast.info("Produto indisponível", {
         description: "Este produto está fora de estoque",
-        variant: "destructive",
       });
       return;
     }
@@ -113,8 +109,7 @@ const ProductDetail = () => {
       variation: selectedVar || undefined,
     });
 
-    toast({
-      title: "Produto adicionado!",
+    toast.success("Produto adicionado!", {
       description: `${product.name} foi adicionado ao carrinho`,
     });
   };
@@ -132,14 +127,14 @@ const ProductDetail = () => {
         <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
           <Link to="/" className="hover:text-primary">Home</Link>
           <span>/</span>
-          <Link to="/produtos" className="hover:text-primary">Produtos</Link>
+          <Link to="/products" className="hover:text-primary">Produtos</Link>
           <span>/</span>
           <span className="text-foreground">{product.name}</span>
         </div>
 
         {/* Back Button */}
         <Button variant="ghost" className="mb-6" asChild>
-          <Link to="/produtos">
+          <Link to="/products">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar aos Produtos
           </Link>

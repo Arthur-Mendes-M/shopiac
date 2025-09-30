@@ -96,7 +96,7 @@ const NotFound = () => {
                     </Button>
 
                     <Button asChild variant="outline" className="w-full h-12 text-base font-medium" size="lg">
-                      <Link to="/produtos">
+                      <Link to="/products">
                         <Search className="mr-3 h-5 w-5" />
                         Ver Produtos
                       </Link>

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useOrders } from "@/hooks/useApi";
 import { Package, Truck, CheckCircle, Clock, Eye } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { OrderStatusMapper, Order } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -15,14 +15,34 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const MyOrders = () => {
+  const [searchParams] = useSearchParams();
   const { data: orders, isLoading } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [filterBy, setFilterBy] = useState<
     keyof typeof OrderStatusMapper | "Todos"
   >("Todos");
+
+  useEffect(() => {
+    const lookingForOrder = searchParams.get("order");
+    const foundOrder = orders?.find((order) => order.id == lookingForOrder);
+
+    if (!lookingForOrder || !foundOrder) {
+      return;
+    }
+
+    setSelectedOrder(foundOrder);
+    setSheetOpen(true);
+  }, [isLoading]);
 
   const getStatusIcon = (status: keyof typeof OrderStatusMapper) => {
     switch (status) {
@@ -55,9 +75,7 @@ const MyOrders = () => {
   };
 
   const sortedOrders = orders
-    ? [...orders].sort(
-        (a, b) => Number(b.numero) - Number(a.numero)
-      )
+    ? [...orders].sort((a, b) => Number(b.numero) - Number(a.numero))
     : [];
 
   const filteredOrders =
@@ -106,31 +124,35 @@ const MyOrders = () => {
 
             <div className="">
               {/* <h4 className="font-medium">Ordenar por</h4> */}
-              <select
-                className="w-full p-2 border cursor-pointer hover:first:text-primary border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
+              <Select
+                // className="w-full p-2 border cursor-pointer hover:first:text-primary border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors"
                 value={filterBy}
-                onChange={(e) =>
-                  setFilterBy(
-                    e.target.value as keyof typeof OrderStatusMapper | "Todos"
-                  )
+                onValueChange={(e) =>
+                  setFilterBy(e as keyof typeof OrderStatusMapper | "Todos")
                 }
               >
-                <option value="Todos" className="text-foreground">
-                  Todos
-                </option>
-                <option value="Em aberto" className="text-foreground">
-                  Aguardando pagamento
-                </option>
-                <option value="Aprovado" className="text-foreground">
-                  Pagamento aprovado
-                </option>
-                <option value="Pronto para envio" className="text-foreground">
-                  Pedido pronto para envio
-                </option>
-                <option value="Entregue" className="text-foreground">
-                  Pedido entregue
-                </option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtrar por" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Todos" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">Todos</SelectItem>
+                  <SelectItem value="Em aberto" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                    Aguardando pagamento
+                  </SelectItem>
+                  <SelectItem value="Aprovado" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                    Pagamento aprovado
+                  </SelectItem>
+                  <SelectItem
+                    value="Pronto para envio"
+                    className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer"
+                  >
+                    Pedido pronto para envio
+                  </SelectItem>
+                  <SelectItem value="Entregue" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                    Pedido entregue
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -149,7 +171,7 @@ const MyOrders = () => {
                   asChild
                   className="hover:scale-105 transition-all duration-200"
                 >
-                  <Link to="/produtos">Ver Produtos</Link>
+                  <Link to="/products">Ver Produtos</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -266,7 +288,10 @@ const MyOrders = () => {
 
         {/* Order Detail Sheet */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetContent
+            side="right"
+            className="w-full sm:max-w-lg overflow-y-auto"
+          >
             {selectedOrder && (
               <>
                 <SheetHeader>
@@ -284,7 +309,8 @@ const MyOrders = () => {
                     </h3>
                     <Badge className={getStatusColor(selectedOrder.situacao)}>
                       {getStatusIcon(selectedOrder.situacao)}
-                      {OrderStatusMapper[selectedOrder.situacao] || selectedOrder.situacao}
+                      {OrderStatusMapper[selectedOrder.situacao] ||
+                        selectedOrder.situacao}
                     </Badge>
                   </div>
 
@@ -297,16 +323,22 @@ const MyOrders = () => {
                     </h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">ID do Pedido:</span>
+                        <span className="text-muted-foreground">
+                          ID do Pedido:
+                        </span>
                         <span className="font-medium">{selectedOrder.id}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Número:</span>
-                        <span className="font-medium">#{selectedOrder.numero}</span>
+                        <span className="font-medium">
+                          #{selectedOrder.numero}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Data:</span>
-                        <span className="font-medium">{selectedOrder.data_pedido}</span>
+                        <span className="font-medium">
+                          {selectedOrder.data_pedido}
+                        </span>
                       </div>
                     </div>
                   </div>

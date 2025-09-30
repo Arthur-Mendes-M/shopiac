@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Product, LoginData, RegisterData, User, ViaCepResponse, Order } from '@/types';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 // Mock data baseado na API documentation
 // const mockProducts: Product[] = [
@@ -275,10 +275,8 @@ export const useLogin = () => {
       }
     },
     onError: (error) => {
-      toast({
-        title: "Erro no login",
+      toast.error("Erro no login", {
         description: error.message,
-        variant: "destructive",
       });
     }
   });
@@ -323,10 +321,8 @@ export const useRegister = () => {
       }
     },
     onError: (error) => {
-      toast({
-        title: "Erro no cadastro",
+      toast.error("Erro no cadastro", {
         description: error.message,
-        variant: "destructive",
       });
     }
   });
