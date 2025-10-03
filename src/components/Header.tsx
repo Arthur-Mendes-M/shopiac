@@ -8,6 +8,7 @@ import {
   X,
   ChevronDown,
 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,8 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
-import { useState } from "react";
+import { CartPreview } from "@/components/CartPreview";
+import { useApi } from "@/hooks/useApi";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -41,6 +43,11 @@ export const Header = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const { searchProducts } = useApi();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +59,39 @@ export const Header = () => {
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchTerm.trim().length > 1) {
+        const results = await searchProducts(searchTerm.trim());
+        setSearchSuggestions(results.slice(0, 5));
+        setShowSuggestions(true);
+      } else {
+        setSearchSuggestions([]);
+        setShowSuggestions(false);
+      }
+    };
+
+    const debounce = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(debounce);
+  }, [searchTerm]);
+
+  const handleSuggestionClick = (productId: string) => {
+    navigate(`/product/${productId}`);
+    setShowSuggestions(false);
+    setSearchTerm("");
   };
 
   const totalItems = getTotalItems();
@@ -165,14 +205,50 @@ export const Header = () => {
           onSubmit={handleSearch}
           className="hidden lg:flex items-center space-x-2 flex-1 max-w-sm mx-6"
         >
-          <div className="relative flex-1">
+          <div className="relative flex-1" ref={searchRef}>
             <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar produtos..."
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => searchTerm.trim().length > 1 && setShowSuggestions(true)}
             />
+            
+            {showSuggestions && searchSuggestions.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-popover border rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                {searchSuggestions.map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => handleSuggestionClick(product.id)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-left"
+                  >
+                    {product.images && product.images.length > 0 ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-10 h-10 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                        Sem imagem
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm line-clamp-1">{product.name}</p>
+                      <p className="text-xs text-muted-foreground">{product.category}</p>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      }).format(product.promo?.promo_price || product.price)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </form>
 
@@ -182,22 +258,28 @@ export const Header = () => {
           <ThemeToggle />
 
           {/* Cart */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative hover:scale-110 transition-transform duration-200"
-            onClick={() => navigate("/cart")}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <Badge
-                variant="destructive"
-                className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs flex items-center justify-center animate-bounce-in"
+          <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative hover:scale-110 transition-transform duration-200"
               >
-                {totalItems}
-              </Badge>
-            )}
-          </Button>
+                <ShoppingCart className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs flex items-center justify-center animate-bounce-in"
+                  >
+                    {totalItems}
+                  </Badge>
+                )}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-md">
+              <CartPreview onClose={() => setCartOpen(false)} />
+            </SheetContent>
+          </Sheet>
 
           {/* User Menu */}
           {isAuthenticated ? (

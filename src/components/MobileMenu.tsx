@@ -15,13 +15,18 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { Badge } from "@/components/ui/badge";
+import { CartPreview } from "@/components/CartPreview";
 import { useState } from "react";
 
 export const MobileMenu = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { getTotalItems } = useCart();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +41,8 @@ export const MobileMenu = () => {
     navigate("/");
     setMobileMenuOpen(false);
   };
+
+  const totalItems = getTotalItems();
 
   const navigationItems = [
     { to: "/", label: "Início", icon: Home },
@@ -74,6 +81,26 @@ export const MobileMenu = () => {
             <Flame className="h-5 w-5" />
             <span className="text-xs">Promoções</span>
           </Link>
+
+          <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+            <SheetTrigger asChild>
+              <button className="flex flex-col items-center space-y-1 p-2 rounded-md hover:bg-muted transition-colors relative">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="text-xs">Carrinho</span>
+                {totalItems > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs flex items-center justify-center"
+                  >
+                    {totalItems}
+                  </Badge>
+                )}
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-md">
+              <CartPreview onClose={() => setCartOpen(false)} />
+            </SheetContent>
+          </Sheet>
 
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger className="p-2 items-center justify-center flex flex-col space-y-1 rounded-md hover:bg-muted transition-colors">

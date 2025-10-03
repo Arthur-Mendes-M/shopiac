@@ -585,6 +585,55 @@ export const useApi = () => {
     }
   };
 
+  const searchProducts = async (query: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/product?s=${encodeURIComponent(query)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        return result.data || [];
+      }
+      return [];
+    } catch (error) {
+      console.warn('Erro ao buscar produtos:', error);
+      return [];
+    }
+  };
+
+  const getCoupon = async (couponCode: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/coupon/${couponCode}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Cupom inválido');
+      }
+
+      return result;
+    } catch (error) {
+      console.warn('Erro ao buscar cupom:', error);
+      throw error;
+    }
+  };
+
   return {
     getAddresses,
     createAddress,
@@ -592,6 +641,8 @@ export const useApi = () => {
     createTransaction,
     updateUser,
     updateUserPassword,
-    deleteAddress
+    deleteAddress,
+    searchProducts,
+    getCoupon
   };
 };

@@ -137,4 +137,25 @@ All colors MUST be HSL.
   .full-red-gradient {
     background: var(--gradient-full-red);
   }
+
+  /* Decorative background elements */
+  .sport-bg-line {
+    position: absolute;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.1), transparent);
+    pointer-events: none;
+  }
+
+  .sport-bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(var(--primary) / 0.05), transparent);
+    pointer-events: none;
+  }
+
+  .sport-bg-abstract {
+    position: absolute;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.03), hsl(var(--accent) / 0.03));
+    pointer-events: none;
+    transform: rotate(-15deg);
+  }
 }
