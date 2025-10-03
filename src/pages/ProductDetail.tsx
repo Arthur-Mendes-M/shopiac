@@ -122,7 +122,14 @@ const ProductDetail = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="relative container mx-auto px-4 py-8 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="sport-bg-line" style={{ top: '5%', left: '0', width: '100%', height: '2px' }} />
+        <div className="sport-bg-circle" style={{ top: '25%', right: '3%', width: '320px', height: '320px' }} />
+        <div className="sport-bg-abstract" style={{ bottom: '15%', left: '10%', width: '200px', height: '200px', borderRadius: '40% 60% 60% 40% / 50% 50% 50% 50%' }} />
+        <div className="sport-bg-line" style={{ bottom: '35%', right: '0', width: '70%', height: '2px' }} />
+        <div className="sport-bg-circle" style={{ bottom: '5%', left: '5%', width: '260px', height: '260px' }} />
+        
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
           <Link to="/" className="hover:text-primary">Home</Link>
