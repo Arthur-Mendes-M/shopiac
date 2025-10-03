@@ -122,7 +122,7 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
 
       <Separator className="my-4" />
 
-      <SheetFooter className="flex-col space-y-4 sm:flex-col">
+      <SheetFooter className="flex-col space-y-4">
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
@@ -134,7 +134,7 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
+        <div className="space-y-2">
           <Button asChild className="w-full" size="lg" onClick={onClose}>
             <Link to="/cart">
               Ver Detalhes do Carrinho
