@@ -79,7 +79,11 @@ const Products = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="relative container mx-auto px-4 py-8 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="sport-bg-line" style={{ top: '15%', left: '0', width: '100%', height: '1px', opacity: 0.3 }} />
+        <div className="sport-bg-circle" style={{ top: '40%', right: '5%', width: '200px', height: '200px' }} />
+        <div className="sport-bg-abstract" style={{ bottom: '25%', left: '8%', width: '120px', height: '120px', borderRadius: '50% 50% 40% 60% / 60% 40% 60% 40%' }} />
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">{getPageTitle()}</h1>

@@ -71,6 +71,12 @@ const Index = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/50 via-background to-accent/10 animate-fade-in">
+        {/* Decorative elements */}
+        <div className="sport-bg-line" style={{ top: '10%', left: '0', width: '100%', height: '2px' }} />
+        <div className="sport-bg-line" style={{ top: '60%', left: '0', width: '100%', height: '1px', opacity: 0.5 }} />
+        <div className="sport-bg-circle" style={{ top: '20%', right: '10%', width: '300px', height: '300px' }} />
+        <div className="sport-bg-circle" style={{ bottom: '10%', left: '5%', width: '200px', height: '200px' }} />
+        <div className="sport-bg-abstract" style={{ top: '30%', right: '5%', width: '150px', height: '150px', borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }} />
         <div className="container mx-auto px-4 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8 animate-slide-in-left">
@@ -157,7 +163,10 @@ const Index = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 animate-fade-in">
+      <section className="relative py-20 animate-fade-in overflow-hidden">
+        {/* Decorative elements */}
+        <div className="sport-bg-line" style={{ top: '30%', left: '0', width: '60%', height: '1px', opacity: 0.3 }} />
+        <div className="sport-bg-abstract" style={{ bottom: '20%', right: '10%', width: '100px', height: '100px', borderRadius: '50% 50% 30% 70% / 60% 40% 60% 40%' }} />
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-12 animate-scale-in">
             <h2 className="text-3xl font-bold">Nossas Categorias</h2>
@@ -207,7 +216,10 @@ const Index = () => {
       </section>
 
       {/* Promo Products */}
-      <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
+      <section className="relative py-20 bg-muted/30 animate-fade-in overflow-hidden" id="destaques">
+        {/* Decorative elements */}
+        <div className="sport-bg-circle" style={{ top: '10%', left: '5%', width: '250px', height: '250px' }} />
+        <div className="sport-bg-line" style={{ top: '50%', left: '0', width: '100%', height: '1px', opacity: 0.2 }} />
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12 animate-slide-in-left">
             <div className="space-y-2">
@@ -327,7 +339,10 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
+      <section className="relative py-20 bg-muted/30 animate-fade-in overflow-hidden" id="destaques">
+        {/* Decorative elements */}
+        <div className="sport-bg-circle" style={{ bottom: '15%', right: '5%', width: '220px', height: '220px' }} />
+        <div className="sport-bg-abstract" style={{ top: '25%', left: '8%', width: '120px', height: '120px', borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }} />
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12 animate-slide-in-left">
             <div className="space-y-2">
