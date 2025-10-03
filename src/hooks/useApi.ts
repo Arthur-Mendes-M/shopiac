@@ -116,7 +116,7 @@ export const useProducts = () => {
       try {
         const response = await fetch(`${API_BASE}/product`);
         const data = await response.json();
-        
+
         if (data.success) {
           return data.data;
         }
@@ -132,7 +132,7 @@ export const useProducts = () => {
   });
 };
 
-export const useProductsByCategory = (category: string) => {  
+export const useProductsByCategory = (category: string) => {
   return useQuery({
     queryKey: ['products', 'category', category],
     queryFn: async (): Promise<Product[]> => {
@@ -140,7 +140,7 @@ export const useProductsByCategory = (category: string) => {
       try {
         const response = await fetch(`${API_BASE}/product/category/${category}`);
         const data = await response.json();
-        
+
         if (data.success) {
           return data.data;
         }
@@ -162,7 +162,7 @@ export const useProductById = (id: string) => {
       try {
         const response = await fetch(`${API_BASE}/product/${id}`);
         const data = await response.json();
-        
+
         if (data.success && data.data.length > 0) {
           return data.data[0];
         }
@@ -187,7 +187,7 @@ export const usePromoProducts = () => {
       try {
         const response = await fetch(`${API_BASE}/product/promo`);
         const data = await response.json();
-        
+
         if (data.success) {
           return data.data;
         }
@@ -211,14 +211,14 @@ export const useViaCep = (cep: string) => {
       if (cleanCep.length !== 8) {
         throw new Error('CEP inválido');
       }
-      
+
       const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
       const data = await response.json();
-      
+
       if (data.erro) {
         throw new Error('CEP não encontrado');
       }
-      
+
       return data;
     },
     enabled: !!cep && cep.replace(/\D/g, '').length === 8,
@@ -229,53 +229,33 @@ export const useViaCep = (cep: string) => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginData): Promise<{ user: User; token: string }> => {
-      try {
-        // Mapear email para cpf_cnpj conforme API espera
-        const apiData = {
-          email: data.email,
-          password: data.password
+
+      // Mapear email para cpf_cnpj conforme API espera
+      const apiData = {
+        email: data.email,
+        password: data.password
+      };
+
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        return {
+          user: result.data.user,
+          token: result.data.token
         };
-        
-        const response = await fetch(`${API_BASE}/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(apiData),
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          return {
-            user: result.data.user,
-            token: result.data.token
-          };
-        }
-        throw new Error(result.message || 'Erro no login');
-      } catch (error) {
-        // Fallback to mock data in development
-        console.warn('API não disponível, usando dados mock:', error);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (data.email === 'test@shopiac.com' && data.password === '123456') {
-          return {
-            user: {
-              id: '1',
-              name: 'João Silva',
-              email: 'joao@email.com',
-              cpf_cnpj: '12345678901',
-              phone: '11999999999'
-            },
-            token: 'mock-jwt-token'
-          };
-        }
-        
-        throw new Error('E-mail ou senha inválidos');
       }
+      throw new Error(result.message)
     },
     onError: (error) => {
-      toast.error("Erro no login", {
+      toast.error("Erro ao tentar fazer login", {
         description: error.message,
       });
     }
@@ -285,44 +265,30 @@ export const useLogin = () => {
 export const useRegister = () => {
   return useMutation({
     mutationFn: async (data: RegisterData): Promise<{ user: User; token: string }> => {
-      try {
-        const response = await fetch(`${API_BASE}/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          return {
-            user: result.data.user,
-            token: result.data.token
-          };
-        }
-        throw new Error(result.message || 'Erro no cadastro');
-      } catch (error) {
-        // Fallback to mock data in development
-        console.warn('API não disponível, usando dados mock:', error);
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        
+
+      const response = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
         return {
-          user: {
-            id: Date.now().toString(),
-            name: data.name,
-            email: data.email,
-            cpf_cnpj: data.cpf_cnpj,
-            phone: data.phone
-          },
-          token: 'mock-jwt-token-register'
+          user: result.data.user,
+          token: result.data.token
         };
       }
+
+      throw new Error(result.message);
+
     },
     onError: (error) => {
-      toast.error("Erro no cadastro", {
-        description: error.message,
+      toast.error("Erro ao tentar realizar cadastro", {
+        description: error.message || 'Favor tente novamente em instantes',
       });
     }
   });
@@ -339,9 +305,9 @@ export const useOrders = () => {
             'Authorization': `Bearer ${token}`,
           },
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           return result.data;
         }
@@ -376,9 +342,9 @@ export const useOrders = () => {
 //             }))
 //           }),
 //         });
-        
+
 //         const result = await response.json();
-        
+
 //         if (result.success) {
 //           return result;
 //         }
@@ -401,7 +367,7 @@ export const useOrders = () => {
 export const useApi = () => {
   const getAddresses = async () => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/address`, {
@@ -410,13 +376,13 @@ export const useApi = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao buscar endereços');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -426,7 +392,7 @@ export const useApi = () => {
 
   const createAddress = async (address: any) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/address`, {
@@ -445,13 +411,13 @@ export const useApi = () => {
           neighborhood: address.neighborhood
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao criar endereço');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -461,7 +427,7 @@ export const useApi = () => {
 
   const deleteAddress = async (addressId: string) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/address/${addressId}`, {
@@ -470,13 +436,13 @@ export const useApi = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao deletar endereço');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -487,7 +453,7 @@ export const useApi = () => {
 
   const calculateShipping = async (items: any[], cep_destino: string) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/frete`, {
         method: 'POST',
@@ -502,13 +468,13 @@ export const useApi = () => {
           cep_destino: cep_destino.replace(/\D/g, '')
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao calcular frete');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -518,10 +484,10 @@ export const useApi = () => {
 
   const createTransaction = async (orderData: { items: any[], address: any, delivery: any, coupon?: string }) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
-      
+
       const body: any = {
         delivery_id: orderData.delivery.id_forma_frete,
         address_id: orderData.address.id,
@@ -544,13 +510,13 @@ export const useApi = () => {
         },
         body: JSON.stringify(body),
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao criar transação');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -560,7 +526,7 @@ export const useApi = () => {
 
   const updateUser = async (user: any) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/user`, {
@@ -575,13 +541,13 @@ export const useApi = () => {
           email: user.email
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao atualizar usuário');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);
@@ -589,9 +555,9 @@ export const useApi = () => {
     }
   };
 
-  const updateUserPassword = async ({new_password, old_password}: {old_password: string, new_password: string}) => {
+  const updateUserPassword = async ({ new_password, old_password }: { old_password: string, new_password: string }) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
-    
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE_URL}/user/password`, {
@@ -605,13 +571,13 @@ export const useApi = () => {
           new_password: new_password
         }),
       });
-      
+
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.message || 'Erro ao atualizar senha');
       }
-      
+
       return result;
     } catch (error) {
       console.warn('API não disponível, usando dados mock:', error);

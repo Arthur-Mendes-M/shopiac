@@ -290,7 +290,7 @@ const Index = () => {
                 <Button
                   size="lg"
                   variant="secondary"
-                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hove:bg-foreground"
+                  className="hover:scale-110 transition-all duration-300 animate-bounce-in hover:bg-foreground"
                   style={{ animationDelay: "0.4s" }}
                   asChild
                 >
