@@ -162,7 +162,7 @@ const ProductDetail = () => {
   return (
     <Layout>
       <div className="relative container mx-auto px-4 py-8 overflow-hidden">
-        {/* Decorative elements */}
+        {/* Decorative elements
         <div
           className="sport-bg-line"
           style={{ top: "5%", left: "0", width: "100%", height: "2px" }}
@@ -188,7 +188,7 @@ const ProductDetail = () => {
         <div
           className="sport-bg-circle"
           style={{ bottom: "5%", left: "5%", width: "260px", height: "260px" }}
-        />
+        /> */}
 
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">

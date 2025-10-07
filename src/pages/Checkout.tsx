@@ -208,11 +208,11 @@ const Checkout = () => {
   return (
     <Layout>
       <div className="relative container mx-auto px-4 py-8 overflow-hidden">
-        {/* Decorative elements */}
+        {/* Decorative elements
         <div className="sport-bg-line" style={{ top: '8%', left: '0', width: '100%', height: '2px' }} />
         <div className="sport-bg-circle" style={{ top: '20%', right: '5%', width: '300px', height: '300px' }} />
         <div className="sport-bg-abstract" style={{ bottom: '25%', left: '7%', width: '180px', height: '180px', borderRadius: '55% 45% 60% 40% / 50% 55% 45% 50%' }} />
-        <div className="sport-bg-line" style={{ bottom: '45%', right: '0', width: '65%', height: '2px' }} />
+        <div className="sport-bg-line" style={{ bottom: '45%', right: '0', width: '65%', height: '2px' }} /> */}
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

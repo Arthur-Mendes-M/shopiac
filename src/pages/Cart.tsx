@@ -83,11 +83,11 @@ const Cart = () => {
   return (
     <Layout>
       <div className="relative container mx-auto px-4 py-8 overflow-hidden">
-        {/* Decorative elements */}
+        {/* Decorative elements
         <div className="sport-bg-line" style={{ top: '10%', left: '0', width: '100%', height: '2px' }} />
         <div className="sport-bg-circle" style={{ top: '30%', right: '8%', width: '280px', height: '280px' }} />
         <div className="sport-bg-abstract" style={{ bottom: '20%', left: '5%', width: '170px', height: '170px', borderRadius: '50% 50% 30% 70% / 40% 60% 40% 60%' }} />
-        <div className="sport-bg-line" style={{ bottom: '40%', right: '0', width: '60%', height: '2px' }} />
+        <div className="sport-bg-line" style={{ bottom: '40%', right: '0', width: '60%', height: '2px' }} /> */}
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
