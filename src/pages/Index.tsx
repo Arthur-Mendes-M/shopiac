@@ -209,10 +209,9 @@ const Index = () => {
       {/* Promo Products */}
       <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-12 animate-slide-in-left">
+          <div className="flex justify-between items-center mb-12 flex-wrap gap-4 animate-slide-in-left">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold flex items-center gap-2">
-                {" "}
+              <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
                 <Flame className="w-8 h-8 text-primary" /> Produtos em promoção
               </h2>
               <p className="text-muted-foreground">
@@ -226,7 +225,7 @@ const Index = () => {
             >
               <Link to="/promocoes">
                 Ver Todos
-                <ArrowRight className="ml-2 h-4 w-4 hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
           </div>
@@ -329,9 +328,9 @@ const Index = () => {
       {/* Featured Products */}
       <section className="py-20 bg-muted/30 animate-fade-in" id="destaques">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-12 animate-slide-in-left">
+          <div className="flex justify-between items-center mb-12 flex-wrap gap-4 animate-slide-in-left">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold  flex items-center gap-2">
+              <h2 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
                 <Zap className="w-8 h-8 text-primary" /> Produtos em Destaque
               </h2>
               <p className="text-muted-foreground">
