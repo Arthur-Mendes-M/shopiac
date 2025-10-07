@@ -44,3 +44,11 @@ export function passwordIsFormatted(password: string) {
 export function passwordsAreEqual(a: string, b: string) {
   return a === b;
 }
+
+export const calcPercentageDiscount = ({
+  newValue,
+  oldValue,
+}: {
+  oldValue: number;
+  newValue: number;
+}) =>  (((oldValue - newValue) / oldValue) * 100).toFixed(2);

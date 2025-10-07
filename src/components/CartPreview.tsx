@@ -1,17 +1,18 @@
-import { Link } from 'react-router-dom';
-import { useCart } from '@/contexts/CartContext';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { ShoppingBag, ArrowRight, X, Plus, Minus } from 'lucide-react';
-import { SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
+import { Link } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ShoppingBag, ArrowRight, X, Plus, Minus } from "lucide-react";
+import { SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 
 export const CartPreview = ({ onClose }: { onClose: () => void }) => {
-  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice } = useCart();
+  const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice } =
+    useCart();
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
@@ -41,18 +42,24 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="flex flex-col h-full">
       <SheetHeader>
-        <SheetTitle>Carrinho ({totalItems} {totalItems === 1 ? 'item' : 'itens'})</SheetTitle>
+        <SheetTitle>
+          Carrinho ({totalItems} {totalItems === 1 ? "item" : "itens"})
+        </SheetTitle>
       </SheetHeader>
 
       <div className="flex-1 overflow-y-auto py-4">
         <div className="space-y-4">
           {items.map((item) => {
-            const itemPrice = item.product.promo?.promo_price || item.product.price;
+            const itemPrice =
+              item.product.promo?.promo_price || item.product.price;
             const variationPrice = item.variation?.price || itemPrice;
             const totalItemPrice = variationPrice * item.quantity;
 
             return (
-              <div key={`${item.productId}-${item.variationId || 'no-variation'}`} className="flex gap-3 p-3 rounded-lg bg-muted/30">
+              <div
+                key={`${item.productId}-${item.variationId || "no-variation"}`}
+                className="flex gap-3 p-3 rounded-lg bg-muted/30"
+              >
                 <div className="flex-shrink-0">
                   <div className="w-16 h-16 rounded-md overflow-hidden bg-muted">
                     {item.product.images.length > 0 ? (
@@ -71,40 +78,58 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start mb-1">
-                    <h4 className="font-medium text-sm line-clamp-1">{item.product.name}</h4>
+                    <h4 className="font-medium text-sm line-clamp-1">
+                      {item.product.name}
+                    </h4>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 -mt-1"
-                      onClick={() => removeItem(item.productId, item.variationId)}
+                      onClick={() =>
+                        removeItem(item.productId, item.variationId)
+                      }
                     >
                       <X className="h-3 w-3" />
                     </Button>
                   </div>
-                  
+
                   {item.variation && (
                     <p className="text-xs text-muted-foreground mb-1">
                       Tamanho: {item.variation.name}
                     </p>
                   )}
-                  
+
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variationId)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.productId,
+                            item.quantity - 1,
+                            item.variationId
+                          )
+                        }
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
-                      <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
+                      <span className="text-sm font-medium w-6 text-center">
+                        {item.quantity}
+                      </span>
                       <Button
                         variant="outline"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variationId)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.productId,
+                            item.quantity + 1,
+                            item.variationId
+                          )
+                        }
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -122,7 +147,7 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
 
       <Separator className="my-4" />
 
-      <SheetFooter className="flex-col space-y-4">
+      <SheetFooter className="flex flex-col gap-3">
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
@@ -134,15 +159,15 @@ export const CartPreview = ({ onClose }: { onClose: () => void }) => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Button asChild className="w-full" size="lg" onClick={onClose}>
+        <div className="flex gap-3 flex-wrap grow max-w-full">
+          <Button asChild variant="outline" className="grow" onClick={onClose}>
+            <Link to="/products">Continuar Comprando</Link>
+          </Button>
+          <Button asChild className="grow" onClick={onClose}>
             <Link to="/cart">
               Ver Detalhes do Carrinho
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full" onClick={onClose}>
-            <Link to="/products">Continuar Comprando</Link>
           </Button>
         </div>
       </SheetFooter>

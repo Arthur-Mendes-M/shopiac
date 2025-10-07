@@ -33,16 +33,18 @@ const MyOrders = () => {
   >("Todos");
 
   useEffect(() => {
-    const lookingForOrder = searchParams.get("order");
-    const foundOrder = orders?.find((order) => order.id == lookingForOrder);
+    if(!orders) return
+    
+    const lookingForNewestOrder = searchParams.get("order");
+    const foundOrder = [...orders].sort((a, b) => Number(b.numero) - Number(a.numero))[0]
 
-    if (!lookingForOrder || !foundOrder) {
+    if (!lookingForNewestOrder) {
       return;
     }
 
     setSelectedOrder(foundOrder);
     setSheetOpen(true);
-  }, [isLoading]);
+  }, [orders, isLoading]);
 
   const getStatusIcon = (status: keyof typeof OrderStatusMapper) => {
     switch (status) {

@@ -24,6 +24,7 @@ export interface ProductVariation {
   name: string;
   price: number;
   stock: number;
+  promo_price?: number;
 }
 
 export interface CartItem {

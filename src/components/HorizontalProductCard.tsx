@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
+import { calcPercentageDiscount } from "@/lib/utils";
 interface HorizontalProductCardProps {
   product: Product;
 }
@@ -55,8 +56,31 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
     }).format(price);
   };
 
-  const discountPercentage = product.promo?.percentage_discount || 0;
-  const finalPrice = product.promo?.promo_price || product.price;
+  const discountPercentage =
+    product.variations.length > 0
+      ? calcPercentageDiscount({
+          oldValue: product.variations.sort(
+            (a, b) => a.promo_price - b.promo_price
+          )[0].price,
+          newValue: product.variations.sort(
+            (a, b) => a.promo_price - b.promo_price
+          )[0].promo_price,
+        })
+      : product.promo?.percentage_discount || 0;
+
+  const finalPrice =
+    product.variations.length > 0
+      ? product.variations
+          .sort((a, b) => a.promo_price - b.promo_price)
+          .filter((variation) => variation.stock > 0)[0].promo_price
+      : product.price;
+  const withoutDiscountPrice =
+    product.variations.length > 0
+      ? product.variations
+          .sort((a, b) => a.promo_price - b.promo_price)
+          .filter((variation) => variation.stock > 0)[0].price
+      : product.price;
+
   const hasPromo = !!product.promo;
 
   return (
@@ -122,7 +146,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
                   <div className="text-right">
                     {hasPromo && (
                       <span className="text-xs text-muted-foreground line-through block">
-                        {formatPrice(product.price)}
+                        {formatPrice(withoutDiscountPrice)}
                       </span>
                     )}
                     <span
