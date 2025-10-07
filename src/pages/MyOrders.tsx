@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useOrders } from "@/hooks/useApi";
+import { useOrders, useApi } from "@/hooks/useApi";
 import { Package, Truck, CheckCircle, Clock, Eye } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { OrderStatusMapper, Order } from "@/types";
+import { OrderStatusMapper, Order, OrderDetails } from "@/types";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -27,10 +28,31 @@ const MyOrders = () => {
   const [searchParams] = useSearchParams();
   const { data: orders, isLoading } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [filterBy, setFilterBy] = useState<
     keyof typeof OrderStatusMapper | "Todos"
   >("Todos");
+  const { getOrderDetails } = useApi();
+
+  const loadOrderDetails = async (order: Order) => {
+    setLoadingDetails(true);
+    setSelectedOrder(order);
+    setSheetOpen(true);
+    
+    try {
+      const details = await getOrderDetails(order.id);
+      setOrderDetails(details);
+    } catch (error: any) {
+      toast.error("Erro ao carregar detalhes do pedido", {
+        description: error.message
+      });
+      setOrderDetails(null);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
 
   useEffect(() => {
     if(!orders) return
@@ -42,8 +64,7 @@ const MyOrders = () => {
       return;
     }
 
-    setSelectedOrder(foundOrder);
-    setSheetOpen(true);
+    loadOrderDetails(foundOrder);
   }, [orders, isLoading]);
 
   const getStatusIcon = (status: keyof typeof OrderStatusMapper) => {
@@ -220,29 +241,15 @@ const MyOrders = () => {
                         </p>
                       </div>
 
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="hover:scale-105 transition-all duration-200"
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setSheetOpen(true);
-                          }}
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          Ver Detalhes
-                        </Button>
-                        {order.situacao === "Pronto para envio" && (
-                          <Button
-                            size="sm"
-                            className="hover:scale-105 transition-all duration-200"
-                          >
-                            <Truck className="mr-2 h-4 w-4" />
-                            Rastrear
-                          </Button>
-                        )}
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="hover:scale-105 transition-all duration-200"
+                        onClick={() => loadOrderDetails(order)}
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Ver Detalhes
+                      </Button>
                     </div>
 
                     {/* Progress indicator */}
@@ -347,13 +354,121 @@ const MyOrders = () => {
 
                   <Separator />
 
+                  {/* Produtos */}
+                  {loadingDetails ? (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground">
+                        Produtos
+                      </h3>
+                      <div className="space-y-3">
+                        {[1, 2].map((i) => (
+                          <Card key={i} className="animate-pulse">
+                            <CardContent className="p-3">
+                              <div className="flex gap-3">
+                                <div className="w-16 h-16 bg-muted rounded" />
+                                <div className="flex-1 space-y-2">
+                                  <div className="h-4 bg-muted rounded w-3/4" />
+                                  <div className="h-3 bg-muted rounded w-1/2" />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  ) : orderDetails?.itens && orderDetails.itens.length > 0 ? (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground">
+                        Produtos
+                      </h3>
+                      <div className="space-y-3">
+                        {orderDetails.itens.map((item, idx) => (
+                          <Card key={idx}>
+                            <CardContent className="p-3">
+                              <div className="flex gap-3">
+                                {item.attachments && item.attachments.length > 0 && (
+                                  <img
+                                    src={item.attachments[0]}
+                                    alt={item.description}
+                                    className="w-16 h-16 object-cover rounded"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-sm">
+                                    {item.description}
+                                  </h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    Código: {item.code}
+                                  </p>
+                                  <div className="flex justify-between items-center mt-2">
+                                    <span className="text-xs text-muted-foreground">
+                                      Qtd: {item.quantity} {item.unit}
+                                    </span>
+                                    <span className="font-medium text-sm">
+                                      R$ {parseFloat(item.value_unit).toFixed(2).replace(".", ",")}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {orderDetails && (
+                    <>
+                      <Separator />
+
+                      {/* Frete */}
+                      <div className="space-y-3">
+                        <h3 className="text-sm font-medium text-muted-foreground">
+                          Frete
+                        </h3>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Valor do Frete:</span>
+                          <span className="font-medium">
+                            R$ {parseFloat(orderDetails.freight_value).toFixed(2).replace(".", ",")}
+                          </span>
+                        </div>
+                        {orderDetails.track_code && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm">Código de Rastreio:</span>
+                            <span className="font-mono text-sm">
+                              {orderDetails.track_code}
+                            </span>
+                          </div>
+                        )}
+                        {orderDetails.track_url && (
+                          <Button
+                            asChild
+                            size="sm"
+                            className="w-full mt-2"
+                          >
+                            <a
+                              href={orderDetails.track_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Truck className="mr-2 h-4 w-4" />
+                              Rastrear Pedido
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  <Separator />
+
                   {/* Valor Total */}
                   <div className="space-y-3">
                     <h3 className="text-sm font-medium text-muted-foreground">
                       Valor Total
                     </h3>
                     <div className="text-2xl font-bold text-primary">
-                      R$ {selectedOrder.valor.toFixed(2)}
+                      R$ {selectedOrder.valor.toFixed(2).replace(".", ",")}
                     </div>
                   </div>
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Product, LoginData, RegisterData, User, ViaCepResponse, Order } from '@/types';
+import { Product, LoginData, RegisterData, User, ViaCepResponse, Order, OrderDetails } from '@/types';
 import { toast } from 'sonner';
 
 // Mock data baseado na API documentation
@@ -634,6 +634,32 @@ export const useApi = () => {
     }
   };
 
+  const getOrderDetails = async (orderId: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/order/${orderId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao buscar detalhes do pedido');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.warn('Erro ao buscar detalhes do pedido:', error);
+      throw error;
+    }
+  };
+
   return {
     getAddresses,
     createAddress,
@@ -643,6 +669,7 @@ export const useApi = () => {
     updateUserPassword,
     deleteAddress,
     searchProducts,
-    getCoupon
+    getCoupon,
+    getOrderDetails
   };
 };

@@ -81,6 +81,22 @@ export interface ShippingQuote {
   nome_forma_frete: string;
 }
 
+export interface OrderItem {
+  attachments: string[];
+  code: string;
+  description: string;
+  unit: string;
+  quantity: string;
+  value_unit: string;
+}
+
+export interface OrderDetails {
+  itens: OrderItem[];
+  freight_value: string;
+  track_url: string;
+  track_code: string;
+}
+
 export interface Order {
   id: string;
   numero: string;
