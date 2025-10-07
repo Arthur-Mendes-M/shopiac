@@ -67,17 +67,17 @@ import {
   
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="w-full max-w-[95vw] sm:max-w-lg sm:rounded-xl p-6 max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <UserLockIcon className="h-5 w-5" />
+        <DialogContent className="[&>button]:hidden min-w-screen min-h-screen w-screen h-screen max-w-none sm:rounded-none p-6 overflow-y-auto flex items-center flex-col justify-center">
+          <DialogHeader className="text-center flex flex-col items-center justify-center">
+            <DialogTitle className="flex items-center gap-2 text-2xl w-fit">
+              <UserLockIcon className="h-10 w-10" />
               Segurança da Conta
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xl">
               Altere sua senha para manter sua conta segura.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+          <form onSubmit={handleResetPassword} className="flex flex-col gap-4 max-w-xl">
             <div className="space-y-2">
               <Label htmlFor="new-password">Nova senha</Label>
               <PasswordInput
