@@ -585,6 +585,35 @@ export const useApi = () => {
     }
   };
 
+  const updateUserPasswordWithoutCurrent = async ({ new_password }: { new_password: string }) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/forgot-password/update`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          new_password: new_password
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao atualizar senha');
+      }
+
+      return result;
+    } catch (error) {
+      console.warn('API não disponível, usando dados mock:', error);
+      throw error; // Re-throw para que o erro seja tratado no componente
+    }
+  };
+
   const searchProducts = async (query: string) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
@@ -715,6 +744,7 @@ export const useApi = () => {
     searchProducts,
     getCoupon,
     getOrderDetails,
-    forgotPassword
+    forgotPassword,
+    updateUserPasswordWithoutCurrent
   };
 };

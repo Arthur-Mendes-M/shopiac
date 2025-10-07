@@ -15,6 +15,7 @@ import { useApi } from "@/hooks/useApi";
 import { SecurityDialog } from "@/components/securityDialog";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { NoPasswordSecurityDialog } from "@/components/NoPasswordSecurityDialog";
 
 const MyAccount = () => {
   const { user, updateUser: updateSavedUserData, isAuthenticated } = useAuth();
@@ -25,6 +26,7 @@ const MyAccount = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+  const [isNoPasswordSecurityOpen, setIsNoPasswordSecurityOpen] = useState(false);
 
   const forgotParam = searchParams.get('forgot');
 
@@ -51,7 +53,7 @@ const MyAccount = () => {
   useEffect(() => {
     // Verificar se há parâmetro forgot na URL
     if (forgotParam === 'true') {
-      setIsSecurityOpen(true);
+      setIsNoPasswordSecurityOpen(true);
       toast.info("Altere sua senha agora", {
         description: "Seu acesso temporário expira em 1 hora.",
         duration: 5000,
@@ -300,6 +302,7 @@ const MyAccount = () => {
       </div>
 
       <SecurityDialog open={isSecurityOpen} onOpenChange={setIsSecurityOpen} />
+      <NoPasswordSecurityDialog open={isNoPasswordSecurityOpen} onOpenChange={setIsNoPasswordSecurityOpen} />
     </Layout>
   );
 };
