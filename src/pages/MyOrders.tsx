@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const MyOrders = () => {
   const [searchParams] = useSearchParams();
@@ -40,13 +41,13 @@ const MyOrders = () => {
     setLoadingDetails(true);
     setSelectedOrder(order);
     setSheetOpen(true);
-    
+
     try {
       const details = await getOrderDetails(order.id);
       setOrderDetails(details);
     } catch (error: any) {
       toast.error("Erro ao carregar detalhes do pedido", {
-        description: error.message
+        description: error.message,
       });
       setOrderDetails(null);
     } finally {
@@ -55,10 +56,12 @@ const MyOrders = () => {
   };
 
   useEffect(() => {
-    if(!orders) return
-    
+    if (!orders) return;
+
     const lookingForNewestOrder = searchParams.get("order");
-    const foundOrder = [...orders].sort((a, b) => Number(b.numero) - Number(a.numero))[0]
+    const foundOrder = [...orders].sort(
+      (a, b) => Number(b.numero) - Number(a.numero)
+    )[0];
 
     if (!lookingForNewestOrder) {
       return;
@@ -131,8 +134,6 @@ const MyOrders = () => {
     );
   }
 
-  console.log("SORTED ORDERS:", sortedOrders);
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 animate-fade-in">
@@ -158,11 +159,22 @@ const MyOrders = () => {
                   <SelectValue placeholder="Filtrar por" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Todos" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">Todos</SelectItem>
-                  <SelectItem value="Em aberto" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                  <SelectItem
+                    value="Todos"
+                    className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer"
+                  >
+                    Todos
+                  </SelectItem>
+                  <SelectItem
+                    value="Em aberto"
+                    className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer"
+                  >
                     Aguardando pagamento
                   </SelectItem>
-                  <SelectItem value="Aprovado" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                  <SelectItem
+                    value="Aprovado"
+                    className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer"
+                  >
                     Pagamento aprovado
                   </SelectItem>
                   <SelectItem
@@ -171,7 +183,10 @@ const MyOrders = () => {
                   >
                     Pedido pronto para envio
                   </SelectItem>
-                  <SelectItem value="Entregue" className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer">
+                  <SelectItem
+                    value="Entregue"
+                    className="text-foreground focus:bg-transparent focus:text-primary cursor-pointer"
+                  >
                     Pedido entregue
                   </SelectItem>
                 </SelectContent>
@@ -210,13 +225,26 @@ const MyOrders = () => {
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
                         <CardTitle className="flex items-center flex-wrap gap-2">
-                          <span>Pedido #{order.numero}</span>
-                          <Badge
+                          {/* <span>Pedido #{order.numero}</span> */}
+                          <span>
+                            Pedido{" "}
+                            <strong className="text-primary">
+                              #{orders.indexOf(order) + 1}
+                            </strong>
+                          </span>
+                          {/* <Badge
                             variant={getStatusColor(order.situacao)}
                             className="flex items-center space-x-1"
                           >
                             {getStatusIcon(order.situacao)}
                             <span>{order.situacao}</span>
+                          </Badge> */}
+                          <Badge
+                            className={cn("flex items-center gap-2", getStatusColor(order.situacao))}
+                          >
+                            {getStatusIcon(order.situacao)}
+                            {OrderStatusMapper[order.situacao] ||
+                              order.situacao}
                           </Badge>
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
@@ -316,7 +344,7 @@ const MyOrders = () => {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
                       Status do Pedido
                     </h3>
-                    <Badge className={getStatusColor(selectedOrder.situacao)}>
+                    <Badge className={cn("flex items-center gap-2 w-fit", getStatusColor(selectedOrder.situacao))}>
                       {getStatusIcon(selectedOrder.situacao)}
                       {OrderStatusMapper[selectedOrder.situacao] ||
                         selectedOrder.situacao}
@@ -386,13 +414,14 @@ const MyOrders = () => {
                           <Card key={idx}>
                             <CardContent className="p-3">
                               <div className="flex gap-3">
-                                {item.attachments && item.attachments.length > 0 && (
-                                  <img
-                                    src={item.attachments[0]}
-                                    alt={item.description}
-                                    className="w-16 h-16 object-cover rounded"
-                                  />
-                                )}
+                                {item.attachments &&
+                                  item.attachments.length > 0 && (
+                                    <img
+                                      src={item.attachments[0]}
+                                      alt={item.description}
+                                      className="w-16 h-16 object-cover rounded"
+                                    />
+                                  )}
                                 <div className="flex-1">
                                   <h4 className="font-medium text-sm">
                                     {item.description}
@@ -405,7 +434,10 @@ const MyOrders = () => {
                                       Qtd: {item.quantity} {item.unit}
                                     </span>
                                     <span className="font-medium text-sm">
-                                      R$ {parseFloat(item.value_unit).toFixed(2).replace(".", ",")}
+                                      R${" "}
+                                      {parseFloat(item.value_unit)
+                                        .toFixed(2)
+                                        .replace(".", ",")}
                                     </span>
                                   </div>
                                 </div>
@@ -429,7 +461,10 @@ const MyOrders = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-sm">Valor do Frete:</span>
                           <span className="font-medium">
-                            R$ {parseFloat(orderDetails.freight_value).toFixed(2).replace(".", ",")}
+                            R${" "}
+                            {parseFloat(orderDetails.freight_value)
+                              .toFixed(2)
+                              .replace(".", ",")}
                           </span>
                         </div>
                         {orderDetails.track_code && (
@@ -441,11 +476,7 @@ const MyOrders = () => {
                           </div>
                         )}
                         {orderDetails.track_url && (
-                          <Button
-                            asChild
-                            size="sm"
-                            className="w-full mt-2"
-                          >
+                          <Button asChild size="sm" className="w-full mt-2">
                             <a
                               href={orderDetails.track_url}
                               target="_blank"
