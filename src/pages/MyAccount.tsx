@@ -13,17 +13,20 @@ import { AddressForm } from "@/components/AddressForm";
 import { Address } from "@/types";
 import { useApi } from "@/hooks/useApi";
 import { SecurityDialog } from "@/components/securityDialog";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const MyAccount = () => {
   const { user, updateUser: updateSavedUserData, isAuthenticated } = useAuth();
   const { getAddresses, createAddress, updateUser } = useApi();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
   const [isSecurityOpen, setIsSecurityOpen] = useState(false);
+
+  const forgotParam = searchParams.get('forgot');
 
   const [userData, setUserData] = useState({
     name: user?.name || "",
@@ -44,6 +47,19 @@ const MyAccount = () => {
       cpf: user?.cpf_cnpj || "",
     });
   }, [user]);
+
+  useEffect(() => {
+    // Verificar se há parâmetro forgot na URL
+    if (forgotParam === 'true') {
+      setIsSecurityOpen(true);
+      toast.info("Altere sua senha agora", {
+        description: "Seu acesso temporário expira em 1 hora.",
+        duration: 5000,
+      });
+      // Remover o parâmetro da URL após abrir o dialog
+      setSearchParams({});
+    }
+  }, [forgotParam]);
 
   const loadAddresses = async () => {
     try {

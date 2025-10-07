@@ -12,6 +12,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Checkout from "./pages/Checkout";
 import MyAccount from "./pages/MyAccount";
 import MyOrders from "./pages/MyOrders";
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route
                   path="/checkout"
                   element={

@@ -660,6 +660,51 @@ export const useApi = () => {
     }
   };
 
+  const forgotPassword = async (email: string, token?: string) => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+
+    try {
+      // Se houver token, fazer login com token temporário
+      if (token) {
+        const response = await fetch(`${API_BASE_URL}/user/forgot-password/validate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.message || 'Token inválido ou expirado');
+        }
+
+        return result;
+      }
+
+      // Caso contrário, solicitar email de recuperação
+      const response = await fetch(`${API_BASE_URL}/user/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao enviar email de recuperação');
+      }
+
+      return result;
+    } catch (error) {
+      console.warn('Erro ao processar recuperação de senha:', error);
+      throw error;
+    }
+  };
+
   return {
     getAddresses,
     createAddress,
@@ -670,6 +715,7 @@ export const useApi = () => {
     deleteAddress,
     searchProducts,
     getCoupon,
-    getOrderDetails
+    getOrderDetails,
+    forgotPassword
   };
 };
