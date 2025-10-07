@@ -51,7 +51,7 @@ const ForgotPassword = () => {
       const response = await forgotPassword(email, tokenValue);
       
       if (response.success && response.data?.user && response.data?.token) {
-        authLogin(response.data.user, response.data.token);
+        authLogin(response.data.user, response.data.token.split(" ")[1]);
         
         toast.success("Acesso temporário ativado!", {
           description: "Seu login expira em 1 hora. Altere sua senha agora.",

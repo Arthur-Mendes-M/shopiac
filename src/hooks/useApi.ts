@@ -666,12 +666,11 @@ export const useApi = () => {
     try {
       // Se houver token, fazer login com token temporário
       if (token) {
-        const response = await fetch(`${API_BASE_URL}/user/forgot-password/validate`, {
+        const response = await fetch(`${API_BASE_URL}/forgot-password/validate`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify({ token }),
         });
 
         const result = await response.json();
@@ -684,7 +683,7 @@ export const useApi = () => {
       }
 
       // Caso contrário, solicitar email de recuperação
-      const response = await fetch(`${API_BASE_URL}/user/forgot-password`, {
+      const response = await fetch(`${API_BASE_URL}/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
