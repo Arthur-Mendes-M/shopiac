@@ -42,7 +42,6 @@ export const Header = () => {
   const { getTotalItems } = useCart();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -98,10 +97,10 @@ export const Header = () => {
 
   const navigationItems = [
     { to: "/products", label: "Todos os Produtos" },
-    { to: "/uniformes", label: "Uniformes" },
-    { to: "/canecas", label: "Canecas" },
-    { to: "/acessorios", label: "Acessórios" },
-    { to: "/promocoes", label: "Promoções" },
+    { to: "/products?category=Uniforme", label: "Uniformes" },
+    { to: "/products?category=Caneca", label: "Canecas" },
+    { to: "/products?category=Acessórios", label: "Acessórios" },
+    { to: "/promotions", label: "Promoções" },
   ];
 
   return (
@@ -143,7 +142,7 @@ export const Header = () => {
                   <li>
                     <NavigationMenuLink asChild>
                       <Link
-                        to="/uniformes"
+                        to="/products?category=Uniforme"
                         className="block px-2 py-1 rounded hover:bg-muted"
                       >
                         Uniformes
@@ -153,7 +152,7 @@ export const Header = () => {
                   <li>
                     <NavigationMenuLink asChild>
                       <Link
-                        to="/canecas"
+                        to="/products?category=Caneca"
                         className="block px-2 py-1 rounded hover:bg-muted"
                       >
                         Canecas
@@ -163,7 +162,7 @@ export const Header = () => {
                   <li>
                     <NavigationMenuLink asChild>
                       <Link
-                        to="/acessorios"
+                        to="/products?category=Acessórios"
                         className="block px-2 py-1 rounded hover:bg-muted"
                       >
                         Acessórios
@@ -189,7 +188,7 @@ export const Header = () => {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link
-                  to="/promocoes"
+                  to="/promotions"
                   className="text-sm font-medium relative flex items-center gap-1 after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
                 >
                   <span className="text-lg">🔥</span>

@@ -31,21 +31,21 @@ const Index = () => {
       description: "Camisas, shorts e kits completos",
       // image: 'https://images.unsplash.com/photo-1577212017184-80cc0da11082?w=400&h=300&fit=crop',
       image: "/bone.png",
-      link: "/uniformes",
+      link: "/products?category=Uniforme",
     },
     {
       name: "Canecas",
       description: "Canecas térmicas e personalizadas",
       // image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=300&fit=crop',
       image: "/caneca.png",
-      link: "/canecas",
+      link: "/products?category=Caneca",
     },
     {
       name: "Acessórios",
       description: "Bandeiras, chaveiros e muito mais",
       // image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
       image: "/caderno.png",
-      link: "/acessorios",
+      link: "/products?category=Acessórios",
     },
   ];
 
@@ -110,7 +110,7 @@ const Index = () => {
                   className="hover:scale-105 transition-all duration-300"
                   asChild
                 >
-                  <Link to="/promocoes">
+                  <Link to="/promotions">
                     Ver Promoções
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -223,7 +223,7 @@ const Index = () => {
               className="hover:scale-105 transition-all duration-200"
               asChild
             >
-              <Link to="/promocoes">
+              <Link to="/promotions">
                 Ver Todos
                 <ArrowRight className="h-4 w-4 hover:translate-x-1 transition-transform" />
               </Link>
@@ -293,7 +293,7 @@ const Index = () => {
                   style={{ animationDelay: "0.4s" }}
                   asChild
                 >
-                  <Link to="/promocoes">
+                  <Link to="/promotions">
                     Ver Promoções
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform" />
                   </Link>

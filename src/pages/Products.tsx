@@ -19,7 +19,7 @@ const Products = () => {
     if (location.pathname === '/uniformes') return 'Uniforme';
     if (location.pathname === '/canecas') return 'Caneca';
     if (location.pathname === '/acessorios') return 'Acessórios';
-    if (location.pathname === '/promocoes') return 'promo';
+    if (location.pathname === '/promotions') return 'promo';
     return searchParams.get('category');
   };
 

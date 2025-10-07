@@ -47,10 +47,10 @@ export const MobileMenu = () => {
   const navigationItems = [
     { to: "/", label: "Início", icon: Home },
     { to: "/products", label: "Todos os Produtos", icon: Package },
-    { to: "/uniformes", label: "Uniformes", icon: Package },
-    { to: "/canecas", label: "Canecas", icon: Coffee },
-    { to: "/acessorios", label: "Acessórios", icon: Package },
-    { to: "/promocoes", label: "Promoções", icon: Flame },
+    { to: "/products?category=Uniforme", label: "Uniformes", icon: Package },
+    { to: "/products?category=Caneca", label: "Canecas", icon: Coffee },
+    { to: "/products?category=Acessórios", label: "Acessórios", icon: Package },
+    { to: "/promotions", label: "Promoções", icon: Flame },
   ];
 
   return (
@@ -75,7 +75,7 @@ export const MobileMenu = () => {
           </Link>
 
           <Link
-            to="/promocoes"
+            to="/promotions"
             className="flex flex-col items-center space-y-1 p-2 rounded-md hover:bg-muted transition-colors"
           >
             <Flame className="h-5 w-5" />

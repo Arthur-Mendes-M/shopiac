@@ -31,16 +31,16 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-semibold">Produtos</h4>
             <div className="space-y-2 text-sm">
-              <Link to="/uniformes" className="block text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/products?category=Uniforme" className="block text-muted-foreground hover:text-primary transition-colors">
                 Uniformes
               </Link>
-              <Link to="/canecas" className="block text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/products?category=Caneca" className="block text-muted-foreground hover:text-primary transition-colors">
                 Canecas
               </Link>
-              <Link to="/acessorios" className="block text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/products?category=Acessórios" className="block text-muted-foreground hover:text-primary transition-colors">
                 Acessórios
               </Link>
-              <Link to="/promocoes" className="block text-muted-foreground hover:text-primary transition-colors">
+              <Link to="/promotions" className="block text-muted-foreground hover:text-primary transition-colors">
                 Promoções
               </Link>
             </div>
