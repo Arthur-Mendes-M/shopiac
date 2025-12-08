@@ -1,32 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Layout } from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/contexts/AuthContext';
-import { useApi } from '@/hooks/useApi';
-import { 
-  CreditCard, 
-  Truck, 
-  Shield, 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Layout } from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
+import { useApi } from "@/hooks/useApi";
+import {
+  CreditCard,
+  Truck,
+  Shield,
   Clock,
   CheckCircle,
-  ArrowLeft
-} from 'lucide-react';
-import { Address } from '@/types';
-import { AddressList } from '@/components/AddressList';
-import { AddressForm } from '@/components/AddressForm';
-import { useCart } from '@/contexts/CartContext';
-import { toast } from 'sonner';
-import { CheckoutProductRow } from '@/components/CheckoutProductRow';
+  ArrowLeft,
+} from "lucide-react";
+import { Address } from "@/types";
+import { AddressList } from "@/components/AddressList";
+import { AddressForm } from "@/components/AddressForm";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
+import { CheckoutProductRow } from "@/components/CheckoutProductRow";
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { getAddresses, createAddress, calculateShipping, createTransaction } = useApi();
+  const { getAddresses, createAddress, calculateShipping, createTransaction } =
+    useApi();
 
   const [step, setStep] = useState(1); // 1: address, 2: shipping, 3: payment
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -58,16 +59,17 @@ const Checkout = () => {
         });
       }
     } catch (error) {
-      console.error('Erro ao carregar endereços:', error);
+      console.error("Erro ao carregar endereços:", error);
       toast.error("Erro ao carregar endereços", {
-        description: error instanceof Error ? error.message : "Tente novamente.",
+        description:
+          error instanceof Error ? error.message : "Tente novamente.",
       });
     }
   };
 
   const loadShippingOptions = async (address: Address) => {
     if (!address.zip_code) return;
-    
+
     setShippingLoading(true);
     try {
       const response = await calculateShipping(items, address.zip_code);
@@ -80,9 +82,10 @@ const Checkout = () => {
         });
       }
     } catch (error) {
-      console.error('Erro ao calcular frete:', error);
+      console.error("Erro ao calcular frete:", error);
       toast.error("Erro ao calcular frete", {
-        description: error instanceof Error ? error.message : "Tente novamente.",
+        description:
+          error instanceof Error ? error.message : "Tente novamente.",
       });
     } finally {
       setShippingLoading(false);
@@ -91,7 +94,7 @@ const Checkout = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login?redirect=checkout');
+      navigate("/login?redirect=checkout");
       return;
     }
 
@@ -102,11 +105,12 @@ const Checkout = () => {
   }, [isAuthenticated, items.length, navigate]);
 
   const handleCreateAddress = async (address: Address) => {
-    if(addresses.length >= 5) {
+    if (addresses.length >= 5) {
       toast.info("Limite de 5 endereços excedido", {
-        description: "Caso queira cadastrar um novo endereço, apague ao menos um!"
+        description:
+          "Caso queira cadastrar um novo endereço, apague ao menos um!",
       });
-      return
+      return;
     }
 
     setAddressLoading(true);
@@ -137,9 +141,9 @@ const Checkout = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(price);
   };
 
@@ -172,7 +176,7 @@ const Checkout = () => {
         delivery: selectedShipping,
         coupon: appliedCoupon || undefined,
       });
-      
+
       if (response.success && response.data?.Url) {
         toast.success("Pedido criado!", {
           description: "Você esta sendo redirecionado para o pagamento...",
@@ -180,14 +184,12 @@ const Checkout = () => {
 
         // Clear cart
         clearCart();
-        
+
         // Redirect to Abacate Pay
         window.location.href = response.data.Url;
-        
       } else {
-        throw new Error(response.message || 'Erro ao criar transação');
+        throw new Error(response.message || "Erro ao criar transação");
       }
-      
     } catch (error: any) {
       toast.error("Erro ao processar pedido", {
         description: error.message || "Tente novamente em alguns instantes",
@@ -213,14 +215,16 @@ const Checkout = () => {
         <div className="sport-bg-circle" style={{ top: '20%', right: '5%', width: '300px', height: '300px' }} />
         <div className="sport-bg-abstract" style={{ bottom: '25%', left: '7%', width: '180px', height: '180px', borderRadius: '55% 45% 60% 40% / 50% 55% 45% 50%' }} />
         <div className="sport-bg-line" style={{ bottom: '45%', right: '0', width: '65%', height: '2px' }} /> */}
-        
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Finalizar Compra</h1>
-            <p className="text-muted-foreground">Complete os dados para finalizar seu pedido</p>
+            <p className="text-muted-foreground">
+              Complete os dados para finalizar seu pedido
+            </p>
           </div>
-          <Button variant="ghost" onClick={() => navigate('/carrinho')}>
+          <Button variant="ghost" onClick={() => navigate("/carrinho")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar ao Carrinho
           </Button>
@@ -228,26 +232,50 @@ const Checkout = () => {
 
         {/* Steps Indicator */}
         <div className="flex items-center justify-center space-x-4 mb-8">
-          <div className={`flex items-center space-x-2 ${step >= 1 ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-              {step > 1 ? <CheckCircle className="h-4 w-4" /> : '1'}
+          <div
+            className={`flex items-center space-x-2 ${
+              step >= 1 ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted"
+              }`}
+            >
+              {step > 1 ? <CheckCircle className="h-4 w-4" /> : "1"}
             </div>
             <span className="font-medium">Endereço</span>
           </div>
-          
+
           <div className="flex-1 h-px bg-border" />
-          
-          <div className={`flex items-center space-x-2 ${step >= 2 ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-              {step > 2 ? <CheckCircle className="h-4 w-4" /> : '2'}
+
+          <div
+            className={`flex items-center space-x-2 ${
+              step >= 2 ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                step >= 2 ? "bg-primary text-primary-foreground" : "bg-muted"
+              }`}
+            >
+              {step > 2 ? <CheckCircle className="h-4 w-4" /> : "2"}
             </div>
             <span className="font-medium">Frete</span>
           </div>
-          
+
           <div className="flex-1 h-px bg-border" />
-          
-          <div className={`flex items-center space-x-2 ${step >= 3 ? 'text-primary' : 'text-muted-foreground'}`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+
+          <div
+            className={`flex items-center space-x-2 ${
+              step >= 3 ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                step >= 3 ? "bg-primary text-primary-foreground" : "bg-muted"
+              }`}
+            >
               3
             </div>
             <span className="font-medium">Pagamento</span>
@@ -260,7 +288,7 @@ const Checkout = () => {
             {/* Step 1: Address */}
             {step === 1 && (
               <div className="space-y-6">
-                {(showAddressForm && addresses.length <=4 ) ? (
+                {showAddressForm && addresses.length <= 4 ? (
                   <AddressForm
                     onSubmit={handleCreateAddress}
                     onCancel={() => setShowAddressForm(false)}
@@ -285,7 +313,11 @@ const Checkout = () => {
 
                 {!showAddressForm && (
                   <div className="flex justify-end">
-                    <Button onClick={handleAddressSubmit} size="lg" disabled={!selectedAddress}>
+                    <Button
+                      onClick={handleAddressSubmit}
+                      size="lg"
+                      disabled={!selectedAddress}
+                    >
                       Continuar para Frete
                     </Button>
                   </div>
@@ -306,33 +338,45 @@ const Checkout = () => {
                   {shippingLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
-                      <p className="text-muted-foreground">Calculando frete...</p>
+                      <p className="text-muted-foreground">
+                        Calculando frete...
+                      </p>
                     </div>
                   ) : shippingOptions.length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">Nenhuma opção de frete disponível</p>
+                      <p className="text-muted-foreground">
+                        Nenhuma opção de frete disponível
+                      </p>
                     </div>
                   ) : (
                     shippingOptions.map((option) => (
                       <div
                         key={option.id_forma_frete}
                         className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedShipping?.id_forma_frete === option.id_forma_frete
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:bg-muted/50'
+                          selectedShipping?.id_forma_frete ===
+                          option.id_forma_frete
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:bg-muted/50"
                         }`}
                         onClick={() => setSelectedShipping(option)}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className={`w-4 h-4 rounded-full border-2 ${
-                              selectedShipping?.id_forma_frete === option.id_forma_frete
-                                ? 'border-primary bg-primary'
-                                : 'border-border'
-                            }`} />
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 ${
+                                selectedShipping?.id_forma_frete ===
+                                option.id_forma_frete
+                                  ? "border-primary bg-primary"
+                                  : "border-border"
+                              }`}
+                            />
                             <div>
-                              <p className="font-medium">{option.nome_forma_envio}</p>
-                              <p className="text-sm text-muted-foreground">{option.nome_forma_frete}</p>
+                              <p className="font-medium">
+                                {option.nome_forma_envio}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {option.nome_forma_frete}
+                              </p>
                               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                                 <Clock className="h-4 w-4" />
                                 <span>{option.prazo} dias úteis</span>
@@ -340,8 +384,12 @@ const Checkout = () => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold">{formatPrice(option.preco)}</p>
-                            <p className="text-xs text-muted-foreground capitalize">{option.tipo_entrega}</p>
+                            <p className="font-semibold">
+                              {formatPrice(option.preco)}
+                            </p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                              {option.tipo_entrega}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -349,12 +397,16 @@ const Checkout = () => {
                   )}
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
+                    <Button
+                      variant="outline"
+                      onClick={() => setStep(1)}
+                      className="flex-1"
+                    >
                       Voltar
                     </Button>
-                    <Button 
-                      onClick={() => setStep(3)} 
-                      className="flex-1" 
+                    <Button
+                      onClick={() => setStep(3)}
+                      className="flex-1"
                       disabled={!selectedShipping || shippingLoading}
                     >
                       Continuar para Pagamento
@@ -377,10 +429,13 @@ const Checkout = () => {
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <Shield className="h-5 w-5 text-blue-600" />
-                      <p className="font-medium text-blue-900">Pagamento via Abacate Pay</p>
+                      <p className="font-medium text-blue-900">
+                        Pagamento via Abacate Pay
+                      </p>
                     </div>
                     <p className="text-sm text-blue-700 mt-1">
-                      Você será redirecionado para uma página segura para finalizar o pagamento
+                      Você será redirecionado para uma página segura para
+                      finalizar o pagamento
                     </p>
                   </div>
 
@@ -401,12 +456,16 @@ const Checkout = () => {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
+                    <Button
+                      variant="outline"
+                      onClick={() => setStep(2)}
+                      className="flex-1"
+                    >
                       Voltar
                     </Button>
-                    <Button 
-                      onClick={handleFinishPurchase} 
-                      className="flex-1" 
+                    <Button
+                      onClick={handleFinishPurchase}
+                      className="flex-1"
                       size="lg"
                       disabled={isProcessing}
                     >
@@ -437,12 +496,18 @@ const Checkout = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   {items.map((item) => {
-                    const itemPrice = item.product.promo?.promo_price || item.product.price;
+                    const itemPrice =
+                      item.product.promo?.promo_price || item.product.price;
                     const variationPrice = item.variation?.price || itemPrice;
                     const totalItemPrice = variationPrice * item.quantity;
 
                     return (
-                      <div key={`${item.productId}-${item.variationId || 'no-variation'}`} className="flex justify-between text-sm">
+                      <div
+                        key={`${item.productId}-${
+                          item.variationId || "no-variation"
+                        }`}
+                        className="flex justify-between text-sm"
+                      >
                         {/* <div className="flex-1">
                           <p className="font-medium">{item.product.name}</p>
                           {item.variation && (
@@ -456,7 +521,10 @@ const Checkout = () => {
                         </div>
                         <span>{formatPrice(totalItemPrice)}</span> */}
 
-                        <CheckoutProductRow cartItem={item} currentStep={step}/>
+                        <CheckoutProductRow
+                          cartItem={item}
+                          currentStep={step}
+                        />
                       </div>
                     );
                   })}
@@ -480,13 +548,17 @@ const Checkout = () => {
                 <Separator />
 
                 {/* Cupom de Desconto */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Cupom de Desconto</label>
+                {/* <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Cupom de Desconto
+                  </label>
                   <div className="flex gap-2">
                     <Input
                       placeholder="Digite o cupom"
                       value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setCouponCode(e.target.value.toUpperCase())
+                      }
                       // disabled={!!appliedCoupon}
                       disabled={true}
                     />
@@ -528,9 +600,9 @@ const Checkout = () => {
                       Cupom "{appliedCoupon}" aplicado ✓
                     </p>
                   )}
-                </div>
+                </div> */}
 
-                <Separator />
+                {/* <Separator /> */}
 
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>

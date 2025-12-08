@@ -232,14 +232,14 @@ const Cart = () => {
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
 
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span>Frete</span>
                   <span className={shipping === 0 ? 'text-green-600' : ''}>
                     {shipping === 0 ? 'Grátis' : formatPrice(shipping)}
                   </span>
-                </div>
+                </div> */}
 
-                {shipping === 0 && totalPrice < 199 && (
+                {/* {shipping === 0 && totalPrice < 199 && (
                   <p className="text-sm text-green-600">
                     🎉 Você ganhou frete grátis!
                   </p>
@@ -249,12 +249,12 @@ const Cart = () => {
                   <p className="text-sm text-muted-foreground">
                     Adicione mais {formatPrice(199 - totalPrice)} para ganhar frete grátis
                   </p>
-                )}
+                )} */}
 
                 <Separator />
 
                 <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
+                  <span>Total parcial</span>
                   <span>{formatPrice(finalTotal)}</span>
                 </div>
 

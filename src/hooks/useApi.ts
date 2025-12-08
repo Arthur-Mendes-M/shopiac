@@ -637,31 +637,31 @@ export const useApi = () => {
     }
   };
 
-  const getCoupon = async (couponCode: string) => {
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+  // const getCoupon = async (couponCode: string) => {
+  //   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/coupon/${couponCode}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     const response = await fetch(`${API_BASE_URL}/coupon/${couponCode}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
 
-      const result = await response.json();
+  //     const result = await response.json();
 
-      if (!result.success) {
-        throw new Error(result.message || 'Cupom inválido');
-      }
+  //     if (!result.success) {
+  //       throw new Error(result.message || 'Cupom inválido');
+  //     }
 
-      return result;
-    } catch (error) {
-      console.warn('Erro ao buscar cupom:', error);
-      throw error;
-    }
-  };
+  //     return result;
+  //   } catch (error) {
+  //     console.warn('Erro ao buscar cupom:', error);
+  //     throw error;
+  //   }
+  // };
 
   const getOrderDetails = async (orderId: string) => {
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
@@ -742,7 +742,7 @@ export const useApi = () => {
     updateUserPassword,
     deleteAddress,
     searchProducts,
-    getCoupon,
+    // getCoupon,
     getOrderDetails,
     forgotPassword,
     updateUserPasswordWithoutCurrent
