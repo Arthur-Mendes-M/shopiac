@@ -1,73 +1,53 @@
-# Welcome to your Lovable project
+# Shopiac
 
-## Project info
+Frontend for a football club's official e-commerce platform. Built as a freelance
+project with a partner — I was responsible for the entire frontend, from layout to
+API integration, while the backend was developed separately.
 
-**URL**: https://lovable.dev/projects/44910223-6de3-407a-a075-77bd1fcd593f
+**Live:** [shopiac.com.br](https://shopiac.com.br)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Overview
 
-**Use Lovable**
+Shopiac is a sports merchandise store for a football club, where fans can browse
+and purchase official products. The project was delivered on a tight timeline as a
+real client engagement, and the store is currently live with active customers.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/44910223-6de3-407a-a075-77bd1fcd593f) and start prompting.
+My role covered everything on the frontend: component architecture, UI, routing,
+state management, and connecting the interface to the backend API provided by my
+partner.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Tech stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn--ui-000000?style=flat-square)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Features
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Product catalog with category filtering
+- Product detail pages
+- Shopping cart and checkout flow
+- Integration with backend REST API
+- Fully responsive — mobile and desktop
+- Optimized for performance and fast load times
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Context
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Freelance project — delivered and live in production. Backend and infrastructure
+by [@Murilojms7]([https://github.com/](https://github.com/Murilojms7)). I handled the complete
+frontend delivery independently.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/44910223-6de3-407a-a075-77bd1fcd593f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+*Frontend by [Arthur Martins](https://github.com/Arthur-Mendes-M)*
